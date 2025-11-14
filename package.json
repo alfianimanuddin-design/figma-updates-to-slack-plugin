@@ -1,0 +1,18 @@
+{
+  "name": "commit-to-slack",
+  "version": "1.0.0",
+  "description": "A Figma plugin that lets you commit and share your design updates to Slack with Git-style commit messages.",
+  "main": "code.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "fetch-slack-users": "node fetch-slack-users.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.117.0",
+    "typescript": "^5.9.2"
+  }
+}
