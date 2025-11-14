@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# User Data (should never be committed)
+slack-users.json
+
+# System Files
+.DS_Store
+*.log
+
+# Build files
+*.js.map
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local environment files
+.env
+.env.local

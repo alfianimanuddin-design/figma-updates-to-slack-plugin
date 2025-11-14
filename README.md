@@ -50,6 +50,46 @@ design-commit-plugin/
 2. Select your `manifest.json` file
 3. The plugin will appear in your development plugins
 
+## 🌐 Server Configuration
+
+This plugin uses a backend server to proxy requests to Slack APIs.
+
+### Production (Default)
+The plugin is pre-configured to use the production server:
+```
+https://figma-slack-bridge.vercel.app
+```
+
+### Development Setup
+If you're running the server locally for development:
+
+1. **Start the local server**
+   ```bash
+   cd figma-slack-bridge
+   npm install
+   vercel dev
+   ```
+   The server will run at `http://localhost:3000`
+
+2. **Update the plugin to use local server**
+
+   In [ui.html](ui.html), change line 1360:
+
+   ```javascript
+   // For local development
+   const SERVER_URL = 'http://localhost:3000';
+
+   // For production (default)
+   // const SERVER_URL = 'https://figma-slack-bridge.vercel.app';
+   ```
+
+3. **Reload the plugin in Figma**
+   - Right-click the plugin → Development → Reload
+
+**Important:** Remember to switch back to the production URL before publishing or sharing your plugin!
+
+For more details about the server, see [figma-slack-bridge/README.md](figma-slack-bridge/README.md).
+
 ## ⚙️ Slack Setup
 
 1. Go to your Slack workspace

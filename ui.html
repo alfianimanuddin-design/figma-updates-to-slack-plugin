@@ -15,39 +15,134 @@
             font-size: 13px;
             line-height: 1.5;
             color: var(--figma-color-text, #1e1e1e);
-            background: var(--figma-color-bg, #ffffff);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             padding: 0;
-            height: 100vh;
-            overflow-y: auto;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: scroll;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .container {
             padding: 20px;
-            max-width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 24px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--figma-color-border, #e5e5e5);
+        .form-container {
+            width: 100%;
         }
 
-        .header h1 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: var(--figma-color-text, #1e1e1e);
+        .inline-warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
         }
 
-        .header p {
-            font-size: 12px;
-            color: var(--figma-color-text-secondary, #6b7280);
-            font-weight: 400;
+        .inline-warning a {
+            color: #92400e;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .inline-success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .required-indicator {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .field-valid {
+            border-color: #10b981 !important;
+            background: #f0fdf4;
+        }
+
+        .field-invalid {
+            border-color: #ef4444 !important;
+        }
+
+        .field-feedback {
+            font-size: 10px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .field-feedback.valid {
+            color: #10b981;
+        }
+
+        .field-feedback.invalid {
+            color: #ef4444;
+        }
+
+        .user-count-badge {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .animate-in {
+            animation: slideIn 0.3s ease;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
         }
 
         .server-status {
@@ -88,16 +183,17 @@
         }
 
         .form-section {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: var(--figma-color-bg, #ffffff);
+            border-radius: 12px;
+            /* border: 1px solid var(--figma-color-border, #e5e5e5); */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
         }
 
-        .form-section h3 {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--figma-color-text, #1e1e1e);
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--figma-color-border, #e5e5e5);
+        .form-section:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         .form-group {
@@ -118,7 +214,7 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 12px;
             color: var(--figma-color-text, #1e1e1e);
         }
@@ -132,24 +228,42 @@
 
         .input-field {
             width: 100%;
-            padding: 12px;
-            border: 1.5px solid var(--figma-color-border, #e5e5e5);
-            border-radius: 8px;
+            padding: 12px 14px;
+            border: 1.5px solid var(--figma-color-border, #efefef);
+            border-radius: 10px;
             background: var(--figma-color-bg, #ffffff);
             color: var(--figma-color-text, #1e1e1e);
             font-size: 12px;
             font-family: inherit;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-field:hover {
+            border-color: var(--figma-color-text-secondary, #9ca3af);
         }
 
         .input-field:focus {
             outline: none;
             border-color: var(--figma-color-border-brand, #3b82f6);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
         }
 
         .input-field::placeholder {
             color: var(--figma-color-text-tertiary, #9ca3af);
+        }
+
+        select.input-field {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        select.input-field:focus {
+            cursor: pointer;
         }
 
         .textarea-field {
@@ -159,15 +273,21 @@
         }
 
         .rich-editor {
-            border: 1.5px solid var(--figma-color-border, #e5e5e5);
-            border-radius: 8px;
+            border: 1.5px solid var(--figma-color-border, #efefef);
+            border-radius: 10px;
             background: var(--figma-color-bg, #ffffff);
             min-height: 100px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .rich-editor:hover {
+            border-color: var(--figma-color-text-secondary, #9ca3af);
         }
 
         .rich-editor:focus-within {
             border-color: var(--figma-color-border-brand, #3b82f6);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
         }
 
         .editor-toolbar {
@@ -176,7 +296,7 @@
             display: flex;
             gap: 4px;
             background: var(--figma-color-bg-secondary, #f8f9fa);
-            border-radius: 6px 6px 0 0;
+            border-radius: 8px 8px 0 0;
         }
 
         .editor-btn {
@@ -222,6 +342,7 @@
             outline: none;
             font-size: 12px;
             line-height: 1.5;
+            border-radius: 0 0 8px 8px;
         }
 
         .editor-content:empty:before {
@@ -230,51 +351,32 @@
             pointer-events: none;
         }
 
-        .commit-types {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .commit-type-btn {
-            padding: 12px 16px;
-            border: 1.5px solid var(--figma-color-border, #e5e5e5);
-            background: var(--figma-color-bg, #ffffff);
-            color: var(--figma-color-text, #1e1e1e);
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-
-        .commit-type-btn:hover {
-            border-color: var(--figma-color-border-brand, #3b82f6);
-            background: rgba(59, 130, 246, 0.05);
-        }
-
-        .commit-type-btn.active {
-            background: var(--figma-color-bg-brand, #3b82f6);
-            color: white;
-            border-color: var(--figma-color-border-brand, #3b82f6);
-        }
-
         .tags-input {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            padding: 8px;
-            border: 1.5px solid var(--figma-color-border, #e5e5e5);
-            border-radius: 8px;
+            padding: 8px 12px;
+            border: 1.5px solid var(--figma-color-border, #efefef);
+            border-radius: 10px;
             background: var(--figma-color-bg, #ffffff);
-            min-height: 40px;
+            color: var(--figma-color-text, #1e1e1e);
+            font-size: 12px;
+            font-family: inherit;
+            min-height: 48px;
             align-items: center;
+            width: 100%;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: text;
+        }
+
+        .tags-input:hover {
+            border-color: var(--figma-color-text-secondary, #9ca3af);
         }
 
         .tags-input:focus-within {
             border-color: var(--figma-color-border-brand, #3b82f6);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
         }
 
         .tag {
@@ -314,35 +416,88 @@
             border: none;
             outline: none;
             background: transparent;
-            font-size: 11px;
+            font-size: 12px;
+            font-family: inherit;
+            color: var(--figma-color-text, #1e1e1e);
             flex: 1;
-            min-width: 80px;
+            min-width: 120px;
+            padding: 0;
+        }
+
+        .tag-input::placeholder {
+            color: var(--figma-color-text-tertiary, #9ca3af);
+            font-size: 12px;
         }
 
         .submit-btn {
             width: 100%;
-            background: linear-gradient(135deg, var(--figma-color-bg-brand, #3b82f6) 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
             border: none;
             padding: 16px 24px;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             margin-top: 8px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .submit-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .submit-btn:hover::before {
+            opacity: 1;
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
         }
 
         .submit-btn:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+        }
+
+        .submit-btn:disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .fixed-cta {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 20px 24px;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+            /* border-top: 1px solid var(--figma-color-border, #e5e5e5); */
+        }
+
+        .cta-container {
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .status {
@@ -373,29 +528,15 @@
             border: 1px solid var(--figma-color-border, #e5e5e5);
         }
 
-        .preview-section {
-            background: var(--figma-color-bg-secondary, #f8f9fa);
-            padding: 16px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border: 1px solid var(--figma-color-border, #e5e5e5);
-        }
-
-        .preview-section h4 {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--figma-color-text, #1e1e1e);
-        }
-
         .preview-content {
             background: #36393f;
             color: #dcddde;
-            padding: 16px;
+            padding: 18px;
             border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 13px;
+            line-height: 1.6;
             border: 1px solid #40444b;
+            min-height: 200px;
         }
 
         .preview-checkmarks {
@@ -406,10 +547,11 @@
         .preview-title {
             color: #b9bbbe;
             text-transform: uppercase;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             letter-spacing: 0.5px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
+            line-height: 1.5;
         }
 
         .preview-link {
@@ -442,17 +584,29 @@
             right: 0;
             background: var(--figma-color-bg, #ffffff);
             border: 1.5px solid var(--figma-color-border-brand, #3b82f6);
-            border-radius: 8px;
-            margin-top: 4px;
-            max-height: 200px;
+            border-radius: 12px;
+            margin-top: 8px;
+            max-height: 220px;
             overflow-y: auto;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             z-index: 1000;
             display: none;
         }
 
         .autocomplete-dropdown.show {
             display: block;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .autocomplete-item {
@@ -489,25 +643,94 @@
             margin-top: 2px;
         }
 
-        .settings-btn {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: var(--figma-color-bg-secondary, #f8f9fa);
-            border: 1px solid var(--figma-color-border, #e5e5e5);
-            padding: 8px 12px;
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            /* padding-bottom: 20px;
+            border-bottom: 2px solid var(--figma-color-border, #e5e5e5); */
+        }
+
+        .server-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: help;
+            background: white;
+            border: none;
+            width: 36px;
+            height: 36px;
             border-radius: 6px;
+        }
+
+        .status-light {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #9ca3af;
+            transition: all 0.3s ease;
+        }
+
+        .status-light.online {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .status-light.offline {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .status-tooltip {
+            position: absolute;
+            left: 44px;
+            top: 3px;
+            background: var(--figma-color-text, #1e1e1e);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 1000;
+        }
+
+        .server-indicator:hover .status-tooltip {
+            opacity: 1;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--figma-color-text, #ffffff);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.02em;
+            margin: 0;
+        }
+
+        .settings-btn {
+            background: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            width: 36px;
+            height: 36px;
             cursor: pointer;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--figma-color-text, #1e1e1e);
+            font-size: 18px;
+            color: var(--figma-color-text-secondary, #6b7280);
             transition: all 0.2s ease;
-            z-index: 100;
+            line-height: 1;
         }
 
         .settings-btn:hover {
             background: var(--figma-color-bg-hover, #e5e7eb);
-            border-color: var(--figma-color-border-brand, #3b82f6);
+            color: var(--figma-color-text, #1e1e1e);
         }
 
         .settings-modal {
@@ -517,7 +740,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -532,7 +755,7 @@
             border-radius: 12px;
             padding: 24px;
             max-width: 500px;
-            width: 90%;
+            width: 92%;
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -703,146 +926,288 @@
         .collapsible-inner {
             padding: 16px;
         }
+
+        /* Confirmation Modal */
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .confirmation-modal.show {
+            display: flex;
+        }
+
+        .confirmation-content {
+            background: var(--figma-color-bg, #ffffff);
+            border-radius: 12px;
+            padding: 0;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideIn 0.3s ease;
+        }
+
+        .confirmation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 2px solid var(--figma-color-border, #e5e5e5);
+            background: var(--figma-color-bg-secondary, #f8f9fa);
+        }
+
+        .confirmation-header h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--figma-color-text, #1e1e1e);
+            margin: 0;
+        }
+
+        .confirmation-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .confirmation-subtitle {
+            font-size: 12px;
+            color: var(--figma-color-text-secondary, #6b7280);
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .confirmation-preview {
+            background: var(--figma-color-bg-secondary, #f8f9fa);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--figma-color-border, #e5e5e5);
+        }
+
+        .confirmation-footer {
+            display: flex;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 2px solid var(--figma-color-border, #e5e5e5);
+            background: var(--figma-color-bg-secondary, #f8f9fa);
+        }
+
+        .cancel-btn {
+            flex: 1;
+            background: var(--figma-color-bg, #ffffff);
+            color: var(--figma-color-text, #1e1e1e);
+            border: 1.5px solid var(--figma-color-border, #e5e5e5);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cancel-btn:hover {
+            background: var(--figma-color-bg-hover, #f3f4f6);
+            border-color: var(--figma-color-text-secondary, #6b7280);
+        }
+
+        .confirm-btn {
+            flex: 2;
+            background: linear-gradient(135deg, var(--figma-color-bg-brand, #3b82f6) 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
+        }
+
+        .confirm-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
     </style>
 </head>
 <body>
-    <button class="settings-btn" onclick="openSettings()">⚙️ Settings</button>
-
     <div class="container">
-        <div class="header">
-            <h1>
-                <span>🎨</span>
-                Design Commit
-            </h1>
-            <p>Professional design handoff automation</p>
-        </div>
+        <div class="form-container">
+            <!-- Header Controls -->
+            <div class="header-controls">
+                <div class="server-indicator">
+                    <div class="status-light" id="statusLight"></div>
+                    <div class="status-tooltip" id="statusTooltip">Checking...</div>
+                </div>
+                <h1 class="page-title">
+                    <!-- <span>🎨</span> -->
+                    Design Commit
+                </h1>
+                <button class="settings-btn" onclick="openSettings()" title="Settings">⚙️</button>
+            </div>
 
+            <!-- Channel Selection Card -->
+            <div class="form-section">
+                <!-- Slack Channels Warning -->
+                <div id="slackChannelsWarning" class="inline-warning" style="display: none;">
+                    ⚠️ No Slack channels configured. <a onclick="openSettings()">Configure channels in Settings</a> to send commits.
+                </div>
 
-        <div class="form-section">
-            <h3>📋 Project Information</h3>
-
-            <div class="form-group">
-                <label>Commit Type</label>
-                <div class="commit-types">
-                    <button type="button" class="commit-type-btn" data-type="feat">
-                        ✨ Feature
-                    </button>
-                    <button type="button" class="commit-type-btn" data-type="fix">
-                        🐛 Fix
-                    </button>
-                    <button type="button" class="commit-type-btn" data-type="update">
-                        🔄 Update
-                    </button>
-                    <button type="button" class="commit-type-btn active" data-type="final">
-                        🎯 Final
-                    </button>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="slackChannel">
+                        Slack Channel <span class="required-indicator">*</span>
+                    </label>
+                    <select id="slackChannel" class="input-field">
+                        <option value="">Select a channel...</option>
+                    </select>
+                    <div id="slackChannelFeedback" class="field-feedback"></div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="taskName">Task Name <span class="label-hint">(will appear in title)</span></label>
-                <input type="text" id="taskName" class="input-field"
-                       placeholder="Personalized Information on IBKR" required>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="clickupLink">ClickUp Task Link</label>
-                    <input type="url" id="clickupLink" class="input-field"
-                           placeholder="https://app.clickup.com/t/..." required>
-                </div>
+            <!-- Project Details Card -->
+            <div class="form-section" style="margin-bottom: 36px;">
+                <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 20px; color: var(--figma-color-text, #1e1e1e);">Project Details</h3>
 
                 <div class="form-group">
-                    <label for="figmaLink">Figma Project Link</label>
-                    <input type="url" id="figmaLink" class="input-field"
-                           placeholder="https://www.figma.com/file/..." required>
+                    <label for="taskName">
+                        Task Name <span class="required-indicator">*</span>
+                    </label>
+                    <input type="text" id="taskName" class="input-field"
+                           placeholder="e.g., Payment Page Revamp" required>
+                    <div id="taskNameFeedback" class="field-feedback"></div>
                 </div>
-            </div>
-        </div>
 
-        <div class="form-section">
-            <h3>📝 Description</h3>
-            <div class="form-group">
-                <label>Description</label>
-                <div class="rich-editor">
-                    <div class="editor-toolbar">
-                        <button type="button" class="editor-btn" data-command="bold" title="Bold">
-                            <strong>B</strong>
-                        </button>
-                        <button type="button" class="editor-btn" data-command="italic" title="Italic">
-                            <em>I</em>
-                        </button>
-                        <button type="button" class="editor-btn" data-command="underline" title="Underline">
-                            <u>U</u>
-                        </button>
-                        <button type="button" class="editor-btn" data-command="strikeThrough" title="Strikethrough">
-                            <s>S</s>
-                        </button>
-                        <span class="toolbar-separator">|</span>
-                        <button type="button" class="editor-btn list-btn" data-command="insertOrderedList" title="Numbered List">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <text x="1" y="5" font-size="6" fill="currentColor">1.</text>
-                                <line x1="5" y1="4" x2="14" y2="4" stroke="currentColor" stroke-width="1"/>
-                                <text x="1" y="10" font-size="6" fill="currentColor">2.</text>
-                                <line x1="5" y1="9" x2="14" y2="9" stroke="currentColor" stroke-width="1"/>
-                                <text x="1" y="15" font-size="6" fill="currentColor">3.</text>
-                                <line x1="5" y1="14" x2="14" y2="14" stroke="currentColor" stroke-width="1"/>
-                            </svg>
-                        </button>
-                        <button type="button" class="editor-btn list-btn" data-command="insertUnorderedList" title="Bullet List">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <circle cx="2.5" cy="3.5" r="1.5" fill="currentColor"/>
-                                <line x1="5" y1="4" x2="14" y2="4" stroke="currentColor" stroke-width="1"/>
-                                <circle cx="2.5" cy="8.5" r="1.5" fill="currentColor"/>
-                                <line x1="5" y1="9" x2="14" y2="9" stroke="currentColor" stroke-width="1"/>
-                                <circle cx="2.5" cy="13.5" r="1.5" fill="currentColor"/>
-                                <line x1="5" y1="14" x2="14" y2="14" stroke="currentColor" stroke-width="1"/>
-                            </svg>
-                        </button>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clickupLink">
+                            ClickUp Task Link <span class="required-indicator">*</span>
+                        </label>
+                        <input type="url" id="clickupLink" class="input-field"
+                               placeholder="https://app.clickup.com/t/..." required>
+                        <div id="clickupLinkFeedback" class="field-feedback"></div>
                     </div>
-                    <div id="descriptionEditor" class="editor-content" contenteditable="true" 
-                         data-placeholder="The design for this task has been completed, covering all necessary cases (for this phase). You can access the design on Figma through the following link:"></div>
-                </div>
-            </div>
-        </div>
 
-        <div class="form-section">
-            <h3>👥 Acknowledgments</h3>
-            <div class="form-group">
-                <label>Acknowledged by <span class="label-hint">(Start typing to search)</span></label>
-                <div class="autocomplete-container">
-                    <div class="tags-input" id="acknowledgedByTags">
-                        <input type="text" id="acknowledgedByInput" class="tag-input"
-                               placeholder="Type name or username..." autocomplete="off">
+                    <div class="form-group">
+                        <label for="figmaLink">
+                            Figma Project Link <span class="required-indicator">*</span>
+                        </label>
+                        <input type="url" id="figmaLink" class="input-field"
+                               placeholder="https://www.figma.com/file/..." required>
+                        <div id="figmaLinkFeedback" class="field-feedback"></div>
                     </div>
-                    <div class="autocomplete-dropdown" id="acknowledgedByDropdown"></div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>CC <span class="label-hint">(optional - people to CC in the message)</span></label>
-                <div class="autocomplete-container">
-                    <div class="tags-input" id="ccTags">
-                        <input type="text" id="ccInput" class="tag-input"
-                               placeholder="Type name or username..." autocomplete="off">
+                <div class="form-group">
+                    <label>Description <span class="required-indicator">*</span></label>
+                    <div class="rich-editor">
+                        <div class="editor-toolbar">
+                            <button type="button" class="editor-btn" data-command="bold" title="Bold">
+                                <strong>B</strong>
+                            </button>
+                            <button type="button" class="editor-btn" data-command="italic" title="Italic">
+                                <em>I</em>
+                            </button>
+                            <button type="button" class="editor-btn" data-command="underline" title="Underline">
+                                <u>U</u>
+                            </button>
+                            <button type="button" class="editor-btn" data-command="strikeThrough" title="Strikethrough">
+                                <s>S</s>
+                            </button>
+                            <span class="toolbar-separator">|</span>
+                            <button type="button" class="editor-btn list-btn" data-command="insertOrderedList" title="Numbered List">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <text x="1" y="5" font-size="6" fill="currentColor">1.</text>
+                                    <line x1="5" y1="4" x2="14" y2="4" stroke="currentColor" stroke-width="1"/>
+                                    <text x="1" y="10" font-size="6" fill="currentColor">2.</text>
+                                    <line x1="5" y1="9" x2="14" y2="9" stroke="currentColor" stroke-width="1"/>
+                                    <text x="1" y="15" font-size="6" fill="currentColor">3.</text>
+                                    <line x1="5" y1="14" x2="14" y2="14" stroke="currentColor" stroke-width="1"/>
+                                </svg>
+                            </button>
+                            <button type="button" class="editor-btn list-btn" data-command="insertUnorderedList" title="Bullet List">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <circle cx="2.5" cy="3.5" r="1.5" fill="currentColor"/>
+                                    <line x1="5" y1="4" x2="14" y2="4" stroke="currentColor" stroke-width="1"/>
+                                    <circle cx="2.5" cy="8.5" r="1.5" fill="currentColor"/>
+                                    <line x1="5" y1="9" x2="14" y2="9" stroke="currentColor" stroke-width="1"/>
+                                    <circle cx="2.5" cy="13.5" r="1.5" fill="currentColor"/>
+                                    <line x1="5" y1="14" x2="14" y2="14" stroke="currentColor" stroke-width="1"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="descriptionEditor" class="editor-content" contenteditable="true"
+                             data-placeholder="Add details about what's been completed in this design..."></div>
                     </div>
-                    <div class="autocomplete-dropdown" id="ccDropdown"></div>
+                </div>
+
+                <!-- Slack Users Warning -->
+                <div id="slackUsersWarning" class="inline-warning" style="display: none;">
+                    ⚠️ No Slack users loaded. <a onclick="openSettings()">Fetch users in Settings</a> for autocomplete.
+                </div>
+
+                <div class="form-group">
+                    <label for="acknowledgedByInput">
+                        Acknowledged by <span class="required-indicator">*</span>
+                    </label>
+                    <div class="autocomplete-container">
+                        <div class="tags-input" id="acknowledgedByTags">
+                            <input type="text" id="acknowledgedByInput" class="tag-input"
+                                   placeholder="Type name or username..." autocomplete="off">
+                        </div>
+                        <div class="autocomplete-dropdown" id="acknowledgedByDropdown"></div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="ccInput">CC <span class="label-hint">(optional)</span></label>
+                    <div class="autocomplete-container">
+                        <div class="tags-input" id="ccTags">
+                            <input type="text" id="ccInput" class="tag-input"
+                                   placeholder="Type name or username..." autocomplete="off">
+                        </div>
+                        <div class="autocomplete-dropdown" id="ccDropdown"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <button type="button" class="submit-btn" id="submitBtn" onclick="commitToSlack()">
-            🚀 Send Design Commit
-        </button>
-
-        <div class="preview-section">
-            <h4>📋 Preview</h4>
-            <div id="previewContent" class="preview-content">
-                Fill out the form above to see the preview...
-            </div>
-        </div>
+        <!-- Spacing for fixed CTA -->
+        <div style="height: 80px;"></div>
 
         <div id="status" class="status"></div>
+
+        <!-- Hidden preview content for confirmation modal -->
+        <div id="previewContent" style="display: none;"></div>
+        </div>
+
+        <!-- Fixed CTA at bottom -->
+        <div class="fixed-cta">
+            <div class="cta-container">
+                <button type="button" class="submit-btn" id="submitBtn" onclick="commitToSlack()" disabled title="Keyboard shortcut: Cmd/Ctrl + Enter">
+                    🚀 Send Design Commit
+                </button>
+                <p style="text-align: center; font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); margin-top: 8px; margin-bottom: 0;">
+                    💡 Tip: Press <kbd style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 10px;">Cmd/Ctrl + Enter</kbd> to send
+                </p>
+            </div>
+        </div>
     </div>
 
     <!-- Settings Modal -->
@@ -853,15 +1218,15 @@
                 <button class="close-btn" onclick="closeSettings()">&times;</button>
             </div>
 
-            <div class="collapsible-section expanded">
+            <div class="collapsible-section">
                 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                    <h3>👥 Fetch Slack Users</h3>
+                    <h3>🔑 Slack Bot Token</h3>
                     <span class="collapsible-arrow">▶</span>
                 </div>
                 <div class="collapsible-content">
                     <div class="collapsible-inner">
                         <p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin-bottom: 12px; line-height: 1.5;">
-                            Enter your Slack Bot Token to fetch all users from your workspace. This will update the autocomplete list with current team members.
+                            Configure your Slack Bot Token to enable fetching users and channels from your workspace.
                         </p>
 
                         <div class="form-group">
@@ -870,21 +1235,45 @@
                                    placeholder="xoxb-your-bot-token-here">
                         </div>
 
-                        <button class="fetch-btn" id="fetchUsersBtn" onclick="fetchSlackUsers()">
-                            🔄 Fetch Users from Slack
+                        <button class="fetch-btn" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);" onclick="saveSlackToken()">
+                            💾 Save Token
                         </button>
 
-                        <div id="userCount" class="user-count" style="display: none;"></div>
+                        <div id="tokenSaveStatus" class="user-count" style="display: none;"></div>
+
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--figma-color-border, #e5e5e5);">
+                            <p id="tokenStatus" style="font-size: 11px; margin: 0; color: #6b7280;">No token saved yet.</p>
+                        </div>
 
                         <div class="info-box">
                             <strong>How to get your Slack Bot Token:</strong>
                             1. Go to <a href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a><br>
                             2. Select your app or create a new one<br>
                             3. Go to "OAuth & Permissions"<br>
-                            4. Add scopes: <code>users:read</code> and <code>users:read.email</code><br>
+                            4. Add scopes: <code>users:read</code>, <code>users:read.email</code>, <code>channels:read</code>, <code>groups:read</code><br>
                             5. Install app to your workspace<br>
                             6. Copy the "Bot User OAuth Token"
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <h3>👥 Fetch Slack Users</h3>
+                    <span class="collapsible-arrow">▶</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-inner">
+                        <p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin-bottom: 12px; line-height: 1.5;">
+                            Fetch all users from your workspace to enable autocomplete for acknowledgments.
+                        </p>
+
+                        <button class="fetch-btn" id="fetchUsersBtn" onclick="fetchSlackUsers()">
+                            🔄 Fetch Users from Slack
+                        </button>
+
+                        <div id="userCount" class="user-count" style="display: none;"></div>
 
                         <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--figma-color-border, #e5e5e5);">
                             <h4 style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--figma-color-text, #1e1e1e);">Current Status</h4>
@@ -896,74 +1285,387 @@
 
             <div class="collapsible-section">
                 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                    <h3>🔧 Server Configuration</h3>
+                    <h3>📺 Configure Channels</h3>
                     <span class="collapsible-arrow">▶</span>
                 </div>
                 <div class="collapsible-content">
                     <div class="collapsible-inner">
                         <p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin-bottom: 12px; line-height: 1.5;">
-                            Configure your Vercel server URL for sending messages to Slack.
+                            Fetch channels from Slack and configure webhook URLs for each channel you want to send updates to.
                         </p>
 
-                        <div class="form-group">
-                            <label for="serverUrl">Vercel Server URL</label>
-                            <input type="text" id="serverUrl" class="input-field"
-                                   placeholder="https://your-app.vercel.app"
-                                   value="https://figma-slack-bridge.vercel.app">
+                        <button class="fetch-btn" id="fetchChannelsBtn" onclick="fetchSlackChannels()">
+                            🔄 Fetch Channels from Slack
+                        </button>
+
+                        <div id="channelsFetchStatus" class="user-count" style="display: none;"></div>
+
+                        <div id="channelsConfig" style="margin-top: 16px; display: none;">
+                            <h4 style="font-size: 12px; font-weight: 600; margin-bottom: 12px; color: var(--figma-color-text, #1e1e1e);">Configure Webhook URLs</h4>
+                            <p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin-bottom: 12px;">
+                                For each channel you want to use, you need to create an Incoming Webhook.
+                                <a href="https://api.slack.com/messaging/webhooks" target="_blank" style="color: #3b82f6;">Learn how</a>
+                            </p>
+                            <div id="channelsList"></div>
+
+                            <button class="fetch-btn" style="margin-top: 12px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);" onclick="saveChannelConfig()">
+                                💾 Save Channel Configuration
+                            </button>
                         </div>
 
-                        <div id="serverStatus" class="server-status" style="display: block;">
-                            🔄 Checking server connection...
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--figma-color-border, #e5e5e5);">
+                            <h4 style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--figma-color-text, #1e1e1e);">Configured Channels</h4>
+                            <p id="currentChannelsCount" style="font-size: 11px; margin: 0;">No channels configured yet.</p>
                         </div>
 
-                        <div class="info-box">
-                            <strong>Server URL:</strong>
-                            Enter the URL of your Vercel deployment. This server acts as a proxy to send messages to Slack.
+                        <div class="info-box" style="margin-top: 12px;">
+                            <strong>How to create a webhook for a channel:</strong>
+                            1. Go to <a href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a><br>
+                            2. Select your app → "Incoming Webhooks"<br>
+                            3. Toggle "Activate Incoming Webhooks" ON<br>
+                            4. Click "Add New Webhook to Workspace"<br>
+                            5. Select the channel<br>
+                            6. Copy the webhook URL and paste it here
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Clear All Data Section -->
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <h3 style="color: #dc2626;">🗑️ Clear All Data</h3>
+                    <span class="collapsible-arrow">▶</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-inner">
+                        <p style="font-size: 11px; color: #dc2626; margin-bottom: 12px; line-height: 1.5; font-weight: 600;">
+                            ⚠️ Warning: This will delete all saved data including:
+                        </p>
+                        <ul style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin-bottom: 16px; padding-left: 20px; line-height: 1.6;">
+                            <li>Slack Bot Token</li>
+                            <li>Fetched Slack Users</li>
+                            <li>Channel Configurations</li>
+                            <li>Saved Acknowledgments</li>
+                            <li>All Settings</li>
+                        </ul>
+                        <p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin-bottom: 16px;">
+                            This action cannot be undone. You'll need to reconfigure everything from scratch.
+                        </p>
+                        <button class="fetch-btn" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);" onclick="clearAllData()">
+                            🗑️ Clear All Data
+                        </button>
+                        <div id="clearDataStatus" class="user-count" style="margin-top: 12px; display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Welcome Onboarding Modal -->
+    <div class="settings-modal" id="welcomeModal">
+        <div class="settings-content" style="max-width: 460px; max-height: 620px; padding: 0;">
+            <!-- Compact Header with Gradient -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px 24px; text-align: center; border-radius: 12px 12px 0 0;">
+                <div style="font-size: 48px; margin-bottom: 8px;">👋</div>
+                <h2 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 8px 0;">Welcome to Design Commit!</h2>
+                <p style="font-size: 12px; color: rgba(255,255,255,0.9); margin: 0;">Share your Figma designs to Slack with style</p>
+            </div>
+
+            <!-- Compact Body -->
+            <div style="padding: 20px 24px 24px 24px;">
+                <p style="font-size: 12px; color: var(--figma-color-text-secondary, #6b7280); margin-bottom: 16px; text-align: center; line-height: 1.5;">
+                    Quick setup to get started:
+                </p>
+
+                <!-- Compact Steps -->
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+                    <!-- Step 1 -->
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #3b82f6;">
+                        <div style="font-size: 20px; flex-shrink: 0;">👥</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--figma-color-text, #1e1e1e); margin-bottom: 2px;">Fetch Slack Users</div>
+                            <div style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); line-height: 1.4;">Enable autocomplete for team member acknowledgments</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #f59e0b;">
+                        <div style="font-size: 20px; flex-shrink: 0;">📢</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--figma-color-text, #1e1e1e); margin-bottom: 2px;">Configure Channels</div>
+                            <div style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); line-height: 1.4;">Connect channels to post your design commits</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Box -->
+                <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 10px 12px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #fbbf24;">
+                    <p style="font-size: 10px; color: #92400e; line-height: 1.5; margin: 0;">
+                        <strong>💡 Note:</strong> You can skip this now and configure later via Settings ⚙️
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="closeWelcome()" style="flex: 1; padding: 10px 16px; border: 1.5px solid #e5e7eb; background: white; border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--figma-color-text-secondary, #6b7280); cursor: pointer; transition: all 0.2s;">
+                        Skip for Now
+                    </button>
+                    <button onclick="startSetup()" style="flex: 1; padding: 10px 16px; border: none; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 6px; font-size: 12px; font-weight: 600; color: white; cursor: pointer; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3); transition: all 0.2s;">
+                        🚀 Get Started
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Confirmation Modal -->
+    <div class="confirmation-modal" id="confirmationModal">
+        <div class="confirmation-content">
+            <div class="confirmation-header">
+                <h2>📤 Confirm Send to Slack</h2>
+                <button class="close-btn" onclick="closeConfirmation()">&times;</button>
+            </div>
+
+            <div class="confirmation-body">
+                <p class="confirmation-subtitle">Please review your message before sending:</p>
+                <div class="confirmation-preview">
+                    <div id="confirmationPreviewContent" class="preview-content">
+                        <!-- Preview will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="confirmation-footer">
+                <button class="cancel-btn" onclick="closeConfirmation()">Cancel</button>
+                <button class="confirm-btn" onclick="confirmSend()">✓ Confirm & Send to Slack</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        let selectedCommitType = 'final';
+        // Configuration
+        // IMPORTANT: This should be the production server URL for all users
+        // Only change this to 'http://localhost:3000' during local development
+        const SERVER_URL = 'https://figma-slack-bridge.vercel.app';
+        const selectedCommitType = 'final'; // Hardcoded to final design
+
+        // State variables
         let serverOnline = false;
         let acknowledgedBy = [];
         let ccUsers = [];
         let slackUsers = [];
+        let slackChannels = [];
+        let channelConfigs = {}; // Store channel webhook mappings
         let currentFocusIndex = -1;
         let currentDropdownType = null; // 'acknowledged' or 'cc'
+        let isFirstTime = false;
 
         // Initialize
-        window.onload = function() {
-            loadSlackUsers();
+        window.onload = async function() {
+            await loadSlackToken();
+            await loadSlackUsers();
+            await loadChannelConfigs();
             setupEventListeners();
             checkServerStatus();
             updatePreview();
             updateCurrentUsersCount();
+            updateCurrentChannelsCount();
+            validateForm(); // Initial form validation
+            loadSavedAcknowledgments();
+
+            // Check for first time use after everything is loaded
+            // Add a small delay to ensure DOM is fully ready
+            setTimeout(() => {
+                checkFirstTimeUse();
+            }, 100);
         };
 
-        // Load Slack users from JSON file or Figma storage
+        // Check if this is first time use
+        function checkFirstTimeUse() {
+            let hasSeenWelcome = false;
+
+            try {
+                hasSeenWelcome = localStorage.getItem('hasSeenWelcome') === 'true';
+            } catch (e) {
+                console.log('LocalStorage not available for welcome check, defaulting to false');
+                hasSeenWelcome = false;
+            }
+
+            const hasSlackUsers = slackUsers.length > 0;
+            const hasChannels = Object.keys(channelConfigs).length > 0;
+
+            console.log('Onboarding check:', {
+                hasSeenWelcome,
+                hasSlackUsers,
+                hasChannels,
+                usersCount: slackUsers.length,
+                channelsCount: Object.keys(channelConfigs).length
+            });
+
+            // Show welcome modal if user hasn't seen it and has no data
+            if (!hasSeenWelcome && !hasSlackUsers && !hasChannels) {
+                isFirstTime = true;
+                console.log('Showing welcome modal...');
+
+                // Hide warnings during onboarding
+                const usersWarning = document.getElementById('slackUsersWarning');
+                const channelsWarning = document.getElementById('slackChannelsWarning');
+                if (usersWarning) usersWarning.style.display = 'none';
+                if (channelsWarning) channelsWarning.style.display = 'none';
+
+                // Show welcome modal after a short delay
+                setTimeout(() => {
+                    const modal = document.getElementById('welcomeModal');
+                    if (modal) {
+                        modal.classList.add('show');
+                        console.log('Welcome modal shown successfully');
+                    } else {
+                        console.error('Welcome modal element not found in DOM!');
+                    }
+                }, 500);
+            } else {
+                console.log('Welcome modal not shown - conditions not met');
+            }
+        }
+
+        // Welcome Modal Functions
+        function closeWelcome() {
+            document.getElementById('welcomeModal').classList.remove('show');
+            isFirstTime = false;
+
+            // Mark as seen
+            try {
+                localStorage.setItem('hasSeenWelcome', 'true');
+            } catch (e) {
+                console.log('LocalStorage not available');
+            }
+
+            // Show warnings if still no data
+            updateCurrentUsersCount();
+            updateCurrentChannelsCount();
+        }
+
+        function startSetup() {
+            document.getElementById('welcomeModal').classList.remove('show');
+            isFirstTime = false;
+
+            // Mark as seen
+            try {
+                localStorage.setItem('hasSeenWelcome', 'true');
+            } catch (e) {
+                console.log('LocalStorage not available');
+            }
+
+            // Open settings with sections expanded
+            openSettings();
+            setTimeout(() => {
+                // Expand both Fetch Users and Configure Channels sections
+                const sections = document.querySelectorAll('.collapsible-section');
+                sections.forEach((section, index) => {
+                    // Expand first two sections (Fetch Users and Configure Channels)
+                    if (index < 2) {
+                        section.classList.add('expanded');
+                    }
+                });
+            }, 100);
+        }
+
+        // Validate URL format
+        function isValidUrl(url) {
+            try {
+                new URL(url);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // Validate ClickUp URL
+        function isValidClickUpUrl(url) {
+            return isValidUrl(url) && (url.includes('clickup.com') || url.includes('app.clickup.com'));
+        }
+
+        // Validate Figma URL
+        function isValidFigmaUrl(url) {
+            return isValidUrl(url) && url.includes('figma.com');
+        }
+
+        // Show field feedback
+        function showFieldFeedback(fieldId, feedbackId, message, isValid) {
+            const field = document.getElementById(fieldId);
+            const feedback = document.getElementById(feedbackId);
+
+            field.classList.remove('field-valid', 'field-invalid');
+            feedback.classList.remove('valid', 'invalid');
+
+            if (message) {
+                if (isValid) {
+                    field.classList.add('field-valid');
+                    feedback.classList.add('valid');
+                    feedback.innerHTML = `✓ ${message}`;
+                } else {
+                    field.classList.add('field-invalid');
+                    feedback.classList.add('invalid');
+                    feedback.innerHTML = `✗ ${message}`;
+                }
+            } else {
+                feedback.innerHTML = '';
+            }
+        }
+
+        // Validate form and enable/disable submit button
+        function validateForm() {
+            const taskName = document.getElementById('taskName').value.trim();
+            const clickupLink = document.getElementById('clickupLink').value.trim();
+            const figmaLink = document.getElementById('figmaLink').value.trim();
+            const description = document.getElementById('descriptionEditor').textContent.trim();
+            const slackChannel = document.getElementById('slackChannel').value.trim();
+
+            const isValid = taskName &&
+                          isValidClickUpUrl(clickupLink) &&
+                          isValidFigmaUrl(figmaLink) &&
+                          description &&
+                          acknowledgedBy.length > 0 &&
+                          slackChannel;
+
+            document.getElementById('submitBtn').disabled = !isValid;
+            return isValid;
+        }
+
+        // Load saved acknowledgments
+        function loadSavedAcknowledgments() {
+            try {
+                const saved = localStorage.getItem('lastAcknowledgments');
+                if (saved) {
+                    // We don't auto-fill, just keep it available
+                    console.log('Last used acknowledgments available');
+                }
+            } catch (e) {
+                console.log('LocalStorage not available');
+            }
+        }
+
+        // Save acknowledgments for next time
+        function saveAcknowledgments() {
+            try {
+                if (acknowledgedBy.length > 0) {
+                    localStorage.setItem('lastAcknowledgments', JSON.stringify(acknowledgedBy));
+                }
+            } catch (e) {
+                console.log('LocalStorage not available');
+            }
+        }
+
+        // Load Slack users from Figma storage
         async function loadSlackUsers() {
             try {
-                // Try to load from JSON file first
-                const response = await fetch('slack-users.json');
-                const data = await response.json();
-                slackUsers = data.users || [];
-                console.log('Loaded', slackUsers.length, 'Slack users from JSON');
+                parent.postMessage({ pluginMessage: { type: 'load-slack-users' } }, '*');
+            } catch (storageError) {
+                console.error('Error loading from Figma storage:', storageError);
+                slackUsers = [];
                 updateCurrentUsersCount();
-            } catch (error) {
-                console.error('Error loading Slack users from JSON:', error);
-
-                // Fallback to Figma storage
-                try {
-                    parent.postMessage({ pluginMessage: { type: 'load-slack-users' } }, '*');
-                } catch (storageError) {
-                    console.error('Error loading from Figma storage:', storageError);
-                    slackUsers = [];
-                    updateCurrentUsersCount();
-                }
             }
         }
 
@@ -988,6 +1690,40 @@
                 console.log('Successfully saved Slack users to Figma storage');
             } else if (msg.type === 'save-slack-users-error') {
                 console.error('Error saving to Figma storage:', msg.error);
+            } else if (msg.type === 'load-channel-configs-success') {
+                if (msg.data) {
+                    channelConfigs = msg.data;
+                    console.log('Loaded channel configs from Figma storage');
+                    updateChannelDropdown();
+                    updateCurrentChannelsCount();
+                }
+            } else if (msg.type === 'load-channel-configs-error') {
+                console.error('Error loading channel configs:', msg.error);
+            } else if (msg.type === 'save-channel-configs-success') {
+                console.log('Successfully saved channel configs to Figma storage');
+            } else if (msg.type === 'save-channel-configs-error') {
+                console.error('Error saving channel configs:', msg.error);
+            } else if (msg.type === 'load-slack-token-success') {
+                if (msg.data) {
+                    const tokenInput = document.getElementById('slackToken');
+                    const tokenStatusEl = document.getElementById('tokenStatus');
+
+                    if (tokenInput) {
+                        tokenInput.value = msg.data;
+                    }
+
+                    if (tokenStatusEl) {
+                        const maskedToken = msg.data.substring(0, 10) + '•••••••';
+                        tokenStatusEl.textContent = `Token saved: ${maskedToken}`;
+                        tokenStatusEl.style.color = '#065f46';
+                    }
+                }
+            } else if (msg.type === 'load-slack-token-error') {
+                console.error('Error loading token:', msg.error);
+            } else if (msg.type === 'save-slack-token-success') {
+                console.log('Successfully saved Slack token to Figma storage');
+            } else if (msg.type === 'save-slack-token-error') {
+                console.error('Error saving token:', msg.error);
             }
         };
 
@@ -1005,26 +1741,244 @@
             section.classList.toggle('expanded');
         }
 
+        // Clear All Data
+        async function clearAllData() {
+            const confirmed = confirm(
+                '⚠️ WARNING: This will permanently delete ALL saved data!\n\n' +
+                'This includes:\n' +
+                '• Slack Bot Token\n' +
+                '• All Fetched Users\n' +
+                '• Channel Configurations\n' +
+                '• Saved Acknowledgments\n\n' +
+                'You will need to reconfigure everything from scratch.\n\n' +
+                'Are you absolutely sure you want to continue?'
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            const statusEl = document.getElementById('clearDataStatus');
+            statusEl.textContent = '🔄 Clearing all data...';
+            statusEl.style.display = 'block';
+            statusEl.className = 'user-count';
+
+            try {
+                // Clear localStorage (if available)
+                try {
+                    localStorage.clear();
+                    console.log('localStorage cleared');
+                } catch (e) {
+                    console.log('localStorage not available, skipping');
+                }
+
+                // Clear Figma clientStorage
+                parent.postMessage({
+                    pluginMessage: {
+                        type: 'save-slack-users',
+                        data: null
+                    }
+                }, '*');
+
+                parent.postMessage({
+                    pluginMessage: {
+                        type: 'save-channel-configs',
+                        data: null
+                    }
+                }, '*');
+
+                parent.postMessage({
+                    pluginMessage: {
+                        type: 'save-slack-token',
+                        data: null
+                    }
+                }, '*');
+
+                // Reset all state variables
+                slackUsers = [];
+                slackChannels = [];
+                channelConfigs = {};
+                acknowledgedBy = [];
+                ccUsers = [];
+
+                // Clear form fields
+                document.getElementById('slackToken').value = '';
+                document.getElementById('taskName').value = '';
+                document.getElementById('clickupLink').value = '';
+                document.getElementById('figmaLink').value = '';
+                document.getElementById('descriptionEditor').textContent = '';
+                document.getElementById('slackChannel').value = '';
+
+                // Update UI
+                updateCurrentUsersCount();
+                updateCurrentChannelsCount();
+                updateChannelDropdown();
+                renderAcknowledgedByTags();
+                renderCcTags();
+                validateForm();
+
+                // Clear token status
+                const tokenStatusEl = document.getElementById('tokenStatus');
+                if (tokenStatusEl) {
+                    tokenStatusEl.style.display = 'none';
+                }
+
+                // Show success message
+                statusEl.textContent = '✅ All data cleared successfully! Plugin reset to fresh state.';
+                statusEl.className = 'user-count success';
+                statusEl.style.color = '#065f46';
+
+                // Close settings and show welcome modal after clearing
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                    closeSettings();
+
+                    // Show welcome modal after a delay
+                    setTimeout(() => {
+                        checkFirstTimeUse();
+                    }, 500);
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error clearing data:', error);
+                statusEl.textContent = `❌ Error: ${error.message}`;
+                statusEl.className = 'user-count error';
+                statusEl.style.color = '#dc2626';
+            }
+        }
+
+        // Slack Token Management
+        async function saveSlackToken() {
+            const tokenInput = document.getElementById('slackToken');
+            const statusEl = document.getElementById('tokenSaveStatus');
+            const tokenStatusEl = document.getElementById('tokenStatus');
+
+            if (!tokenInput || !statusEl || !tokenStatusEl) {
+                console.error('Token elements not found');
+                return;
+            }
+
+            const token = tokenInput.value.trim();
+
+            if (!token) {
+                statusEl.textContent = '⚠️ Please enter a token';
+                statusEl.className = 'user-count';
+                statusEl.style.display = 'block';
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 3000);
+                return;
+            }
+
+            if (!token.startsWith('xoxb-')) {
+                statusEl.textContent = '⚠️ Token should start with "xoxb-"';
+                statusEl.className = 'user-count';
+                statusEl.style.display = 'block';
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 3000);
+                return;
+            }
+
+            // Save to localStorage
+            try {
+                localStorage.setItem('slackBotToken', token);
+            } catch (e) {
+                console.log('LocalStorage not available');
+            }
+
+            // Save to Figma storage
+            parent.postMessage({
+                pluginMessage: {
+                    type: 'save-slack-token',
+                    data: token
+                }
+            }, '*');
+
+            // Show success
+            statusEl.textContent = '✅ Token saved successfully!';
+            statusEl.className = 'user-count success';
+            statusEl.style.display = 'block';
+
+            // Update status text
+            const maskedToken = token.substring(0, 10) + '•••••••';
+            tokenStatusEl.textContent = `Token saved: ${maskedToken}`;
+            tokenStatusEl.style.color = '#065f46';
+
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+
+        async function loadSlackToken() {
+            try {
+                // Try localStorage first
+                const saved = localStorage.getItem('slackBotToken');
+                if (saved) {
+                    const tokenInput = document.getElementById('slackToken');
+                    const tokenStatusEl = document.getElementById('tokenStatus');
+
+                    if (tokenInput) {
+                        tokenInput.value = saved;
+                    }
+
+                    if (tokenStatusEl) {
+                        const maskedToken = saved.substring(0, 10) + '•••••••';
+                        tokenStatusEl.textContent = `Token saved: ${maskedToken}`;
+                        tokenStatusEl.style.color = '#065f46';
+                    }
+                    return;
+                }
+            } catch (e) {
+                console.log('LocalStorage not available');
+            }
+
+            // Try Figma storage
+            parent.postMessage({ pluginMessage: { type: 'load-slack-token' } }, '*');
+        }
+
         function updateCurrentUsersCount() {
             const countEl = document.getElementById('currentUsersCount');
+            const warning = document.getElementById('slackUsersWarning');
+
+            // Null check - some elements might not exist
+            if (!countEl) {
+                console.log('currentUsersCount element not found');
+                return;
+            }
+
             if (slackUsers.length > 0) {
                 countEl.textContent = `Currently loaded: ${slackUsers.length} users`;
                 countEl.style.color = '#065f46';
+
+                // Hide warning
+                if (warning) warning.style.display = 'none';
             } else {
                 countEl.textContent = 'No users loaded. Please fetch users from Slack.';
                 countEl.style.color = '#dc2626';
+
+                // Show warning
+                if (warning) warning.style.display = 'flex';
             }
         }
 
         // Fetch Slack Users
         async function fetchSlackUsers() {
-            const token = document.getElementById('slackToken').value.trim();
-            const serverUrl = document.getElementById('serverUrl').value.trim();
+            const tokenInput = document.getElementById('slackToken');
             const fetchBtn = document.getElementById('fetchUsersBtn');
             const userCountEl = document.getElementById('userCount');
 
+            // Null checks for all elements
+            if (!tokenInput || !userCountEl) {
+                console.error('Required elements not found in DOM');
+                alert('UI Error: Please reload the plugin');
+                return;
+            }
+
+            const token = tokenInput.value.trim();
+
             if (!token) {
-                userCountEl.textContent = '⚠️ Please enter your Slack Bot Token';
+                userCountEl.textContent = '⚠️ Please enter your Slack Bot Token in the first section';
                 userCountEl.style.display = 'block';
                 userCountEl.className = 'user-count';
                 return;
@@ -1032,13 +1986,6 @@
 
             if (!token.startsWith('xoxb-')) {
                 userCountEl.textContent = '⚠️ Token should start with "xoxb-"';
-                userCountEl.style.display = 'block';
-                userCountEl.className = 'user-count';
-                return;
-            }
-
-            if (!serverUrl) {
-                userCountEl.textContent = '⚠️ Please configure your Server URL in settings';
                 userCountEl.style.display = 'block';
                 userCountEl.className = 'user-count';
                 return;
@@ -1052,7 +1999,7 @@
 
             try {
                 // Call Vercel proxy endpoint instead of Slack API directly
-                const response = await fetch(`${serverUrl}/api/fetch-slack-users`, {
+                const response = await fetch(`${SERVER_URL}/api/fetch-slack-users`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1110,23 +2057,308 @@
             }
         }
 
+        // Fetch Slack Channels
+        async function fetchSlackChannels() {
+            const tokenInput = document.getElementById('slackToken');
+            const fetchBtn = document.getElementById('fetchChannelsBtn');
+            const statusEl = document.getElementById('channelsFetchStatus');
+
+            // Null checks for all elements
+            if (!tokenInput || !statusEl) {
+                console.error('Required elements not found in DOM');
+                alert('UI Error: Please reload the plugin');
+                return;
+            }
+
+            const token = tokenInput.value.trim();
+
+            if (!token) {
+                statusEl.textContent = '⚠️ Please enter your Slack Bot Token in the first section';
+                statusEl.style.display = 'block';
+                statusEl.className = 'user-count';
+                return;
+            }
+
+            fetchBtn.disabled = true;
+            fetchBtn.textContent = '🔄 Fetching channels...';
+            statusEl.style.display = 'block';
+            statusEl.textContent = 'Connecting to Slack...';
+            statusEl.className = 'user-count';
+
+            try {
+                const response = await fetch(`${SERVER_URL}/api/fetch-slack-channels`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token })
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || result.details || 'Failed to fetch channels');
+                }
+
+                slackChannels = result.data.channels || [];
+
+                if (slackChannels.length === 0) {
+                    throw new Error('No channels found');
+                }
+
+                statusEl.textContent = `✅ Successfully fetched ${slackChannels.length} channels!`;
+                statusEl.className = 'user-count success';
+
+                // Show channel configuration UI
+                document.getElementById('channelsConfig').style.display = 'block';
+                renderChannelConfigUI();
+
+                setTimeout(() => {
+                    statusEl.textContent = `Configure webhook URLs for the channels you want to use.`;
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error fetching channels:', error);
+                statusEl.textContent = `❌ Error: ${error.message}`;
+                statusEl.className = 'user-count';
+
+                if (error.message === 'invalid_auth' || error.message === 'not_authed') {
+                    statusEl.textContent += ' - Check your token.';
+                } else if (error.message === 'missing_scope') {
+                    statusEl.textContent += ' - Add scopes: channels:read, groups:read';
+                }
+            } finally {
+                fetchBtn.disabled = false;
+                fetchBtn.textContent = '🔄 Fetch Channels from Slack';
+            }
+        }
+
+        // Render Channel Configuration UI
+        function renderChannelConfigUI() {
+            const channelsList = document.getElementById('channelsList');
+
+            let html = '<div style="max-height: 300px; overflow-y: auto;">';
+
+            slackChannels.forEach(channel => {
+                const savedWebhook = channelConfigs[channel.id] || '';
+                html += `
+                    <div style="margin-bottom: 12px; padding: 12px; background: var(--figma-color-bg-secondary, #f8f9fa); border-radius: 8px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <strong style="font-size: 12px;">#${channel.name}</strong>
+                            ${channel.is_private ? '<span style="margin-left: 8px; font-size: 10px; color: #6b7280;">🔒 Private</span>' : ''}
+                        </div>
+                        <input
+                            type="text"
+                            class="input-field"
+                            id="webhook_${channel.id}"
+                            placeholder="https://hooks.slack.com/services/..."
+                            value="${savedWebhook}"
+                            style="font-size: 11px; padding: 8px 10px;">
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            channelsList.innerHTML = html;
+        }
+
+        // Save Channel Configuration
+        async function saveChannelConfig() {
+            const newConfigs = {};
+
+            slackChannels.forEach(channel => {
+                const webhookInput = document.getElementById(`webhook_${channel.id}`);
+                if (webhookInput && webhookInput.value.trim()) {
+                    newConfigs[channel.id] = {
+                        webhook: webhookInput.value.trim(),
+                        name: channel.name,
+                        is_private: channel.is_private
+                    };
+                }
+            });
+
+            if (Object.keys(newConfigs).length === 0) {
+                alert('Please configure at least one channel webhook URL');
+                return;
+            }
+
+            channelConfigs = newConfigs;
+
+            // Save to localStorage
+            try {
+                localStorage.setItem('channelConfigs', JSON.stringify(channelConfigs));
+            } catch (e) {
+                console.log('LocalStorage not available');
+            }
+
+            // Save to Figma storage
+            parent.postMessage({
+                pluginMessage: {
+                    type: 'save-channel-configs',
+                    data: channelConfigs
+                }
+            }, '*');
+
+            // Update dropdown
+            updateChannelDropdown();
+            updateCurrentChannelsCount();
+
+            // Show success message
+            const statusEl = document.getElementById('channelsFetchStatus');
+            statusEl.textContent = `✅ Saved ${Object.keys(channelConfigs).length} channel configurations!`;
+            statusEl.className = 'user-count success';
+            statusEl.style.display = 'block';
+
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+
+        // Load Channel Configurations
+        async function loadChannelConfigs() {
+            try {
+                // Try localStorage first
+                const saved = localStorage.getItem('channelConfigs');
+                if (saved) {
+                    channelConfigs = JSON.parse(saved);
+                    updateChannelDropdown();
+                    return;
+                }
+            } catch (e) {
+                console.log('LocalStorage not available');
+            }
+
+            // Try Figma storage
+            parent.postMessage({ pluginMessage: { type: 'load-channel-configs' } }, '*');
+        }
+
+        // Update Channel Dropdown
+        function updateChannelDropdown() {
+            const dropdown = document.getElementById('slackChannel');
+
+            if (!dropdown) {
+                console.log('slackChannel dropdown not found');
+                return;
+            }
+
+            dropdown.innerHTML = '<option value="">Select a channel...</option>';
+
+            Object.keys(channelConfigs).forEach(channelId => {
+                const config = channelConfigs[channelId];
+                const option = document.createElement('option');
+                option.value = config.webhook;
+                option.textContent = `#${config.name}${config.is_private ? ' 🔒' : ''}`;
+                dropdown.appendChild(option);
+            });
+        }
+
+        // Update Current Channels Count
+        function updateCurrentChannelsCount() {
+            const countEl = document.getElementById('currentChannelsCount');
+            const warning = document.getElementById('slackChannelsWarning');
+
+            if (!countEl) {
+                console.log('currentChannelsCount element not found');
+                return;
+            }
+
+            const count = Object.keys(channelConfigs).length;
+
+            if (count > 0) {
+                const channelNames = Object.values(channelConfigs).map(c => `#${c.name}`).join(', ');
+                countEl.textContent = `${count} channel${count > 1 ? 's' : ''} configured: ${channelNames}`;
+                countEl.style.color = '#065f46';
+
+                // Hide warning
+                if (warning) warning.style.display = 'none';
+            } else {
+                countEl.textContent = 'No channels configured yet.';
+                countEl.style.color = '#dc2626';
+
+                // Show warning
+                if (warning) warning.style.display = 'flex';
+            }
+        }
+
         // Close modal when clicking outside
         document.addEventListener('click', function(e) {
-            const modal = document.getElementById('settingsModal');
-            if (e.target === modal) {
+            const settingsModal = document.getElementById('settingsModal');
+            const confirmationModal = document.getElementById('confirmationModal');
+
+            if (e.target === settingsModal) {
                 closeSettings();
+            }
+
+            if (e.target === confirmationModal) {
+                closeConfirmation();
             }
         });
 
         function setupEventListeners() {
-            // Commit type selection
-            document.querySelectorAll('.commit-type-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.commit-type-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    selectedCommitType = this.dataset.type;
-                    updatePreview();
-                });
+            // Keyboard shortcut for submit (Cmd/Ctrl + Enter)
+            document.addEventListener('keydown', function(e) {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    const submitBtn = document.getElementById('submitBtn');
+                    if (!submitBtn.disabled) {
+                        commitToSlack();
+                    }
+                }
+            });
+
+            // Task Name validation
+            const taskNameInput = document.getElementById('taskName');
+            taskNameInput.addEventListener('input', function() {
+                const value = this.value.trim();
+                if (value) {
+                    showFieldFeedback('taskName', 'taskNameFeedback', 'Task name is valid', true);
+                } else {
+                    showFieldFeedback('taskName', 'taskNameFeedback', 'Task name is required', false);
+                }
+                validateForm();
+                updatePreview();
+            });
+
+            // ClickUp Link validation
+            const clickupInput = document.getElementById('clickupLink');
+            clickupInput.addEventListener('input', function() {
+                const value = this.value.trim();
+                if (!value) {
+                    showFieldFeedback('clickupLink', 'clickupLinkFeedback', '');
+                } else if (isValidClickUpUrl(value)) {
+                    showFieldFeedback('clickupLink', 'clickupLinkFeedback', 'Valid ClickUp link', true);
+                } else {
+                    showFieldFeedback('clickupLink', 'clickupLinkFeedback', 'Please enter a valid ClickUp URL', false);
+                }
+                validateForm();
+                updatePreview();
+            });
+
+            // Figma Link validation
+            const figmaInput = document.getElementById('figmaLink');
+            figmaInput.addEventListener('input', function() {
+                const value = this.value.trim();
+                if (!value) {
+                    showFieldFeedback('figmaLink', 'figmaLinkFeedback', '');
+                } else if (isValidFigmaUrl(value)) {
+                    showFieldFeedback('figmaLink', 'figmaLinkFeedback', 'Valid Figma link', true);
+                } else {
+                    showFieldFeedback('figmaLink', 'figmaLinkFeedback', 'Please enter a valid Figma URL', false);
+                }
+                validateForm();
+                updatePreview();
+            });
+
+            // Slack Channel validation
+            const slackChannelSelect = document.getElementById('slackChannel');
+            slackChannelSelect.addEventListener('change', function() {
+                const value = this.value.trim();
+                if (value) {
+                    showFieldFeedback('slackChannel', 'slackChannelFeedback', 'Channel selected', true);
+                } else {
+                    showFieldFeedback('slackChannel', 'slackChannelFeedback', 'Please select a channel', false);
+                }
+                validateForm();
             });
 
             // Rich text editor
@@ -1150,6 +2382,13 @@
                 setTimeout(() => hideAutocomplete('acknowledged'), 200);
             });
 
+            // Click on tags container to focus input
+            document.getElementById('acknowledgedByTags').addEventListener('click', function(e) {
+                if (e.target === this || e.target.classList.contains('tag-input')) {
+                    tagInput.focus();
+                }
+            });
+
             // Tags input for CC
             const ccInput = document.getElementById('ccInput');
             ccInput.addEventListener('input', function(e) {
@@ -1162,13 +2401,15 @@
                 setTimeout(() => hideAutocomplete('cc'), 200);
             });
 
+            // Click on CC tags container to focus input
+            document.getElementById('ccTags').addEventListener('click', function(e) {
+                if (e.target === this || e.target.classList.contains('tag-input')) {
+                    ccInput.focus();
+                }
+            });
+
             // Server URL change
             document.getElementById('serverUrl').addEventListener('blur', checkServerStatus);
-
-            // Update preview on input changes
-            ['taskName', 'clickupLink', 'figmaLink'].forEach(id => {
-                document.getElementById(id).addEventListener('input', updatePreview);
-            });
 
             document.getElementById('descriptionEditor').addEventListener('input', updatePreview);
 
@@ -1200,12 +2441,16 @@
             if (username && !acknowledgedBy.includes(username)) {
                 acknowledgedBy.push(username);
                 renderAcknowledgedByTags();
+                validateForm();
+                updatePreview();
+                saveAcknowledgments();
             }
         }
 
         function removeAcknowledgedBy(username) {
             acknowledgedBy = acknowledgedBy.filter(u => u !== username);
             renderAcknowledgedByTags();
+            validateForm();
             updatePreview();
         }
 
@@ -1213,6 +2458,7 @@
             if (username && !ccUsers.includes(username)) {
                 ccUsers.push(username);
                 renderCcTags();
+                updatePreview();
             }
         }
 
@@ -1384,25 +2630,32 @@
         }
 
         async function checkServerStatus() {
-            const serverUrl = document.getElementById('serverUrl').value.trim();
-            const statusDiv = document.getElementById('serverStatus');
-            
-            if (!serverUrl) {
-                statusDiv.textContent = '⚠️ Please enter your Vercel URL';
-                statusDiv.className = 'server-status offline';
+            const statusLight = document.getElementById('statusLight');
+            const statusTooltip = document.getElementById('statusTooltip');
+
+            if (!statusLight || !statusTooltip) {
+                console.log('Status elements not found');
                 return;
             }
 
+            // Set checking state
+            statusLight.className = 'status-light';
+            statusTooltip.textContent = 'Checking...';
+
             try {
-                const healthUrl = `${serverUrl}/api/send-to-slack`;
+                const healthUrl = `${SERVER_URL}/api/send-to-slack`;
                 const response = await fetch(healthUrl);
-                
+
                 if (response.ok) {
                     const data = await response.json();
                     if (data.status && data.status.includes('running')) {
                         serverOnline = true;
                         statusDiv.textContent = '✅ Server online - Ready to commit!';
                         statusDiv.className = 'server-status online';
+
+                        // Update minimal indicator
+                        statusLight.className = 'status-light online';
+                        statusTooltip.textContent = 'Server online';
                     } else {
                         throw new Error('Invalid response');
                     }
@@ -1413,6 +2666,10 @@
                 serverOnline = false;
                 statusDiv.textContent = '❌ Server offline - Check your Vercel URL';
                 statusDiv.className = 'server-status offline';
+
+                // Update minimal indicator
+                statusLight.className = 'status-light offline';
+                statusTooltip.textContent = 'Server offline';
             }
         }
 
@@ -1447,10 +2704,7 @@
             } else {
                 titleDisplay = '[Task Name]';
             }
-            preview += `<div class="preview-title">${commitTypes[selectedCommitType]}: ${titleDisplay}</div>`;
-
-            // Description
-            preview += `<div>${description || '[Description will appear here]'}</div>`;
+            preview += `<div class="preview-title">${commitTypes[selectedCommitType]}:<br>${titleDisplay} ${description || '[Description will appear here]'}</div>`;
 
             // Figma link - show "Figma file" as clickable link
             let figmaDisplay = '';
@@ -1534,11 +2788,13 @@
             return clone.textContent.trim();
         }
 
-        async function commitToSlack() {
+        // Show confirmation modal before sending
+        function commitToSlack() {
             const taskName = document.getElementById('taskName').value.trim();
             const clickupLink = document.getElementById('clickupLink').value.trim();
             const figmaLink = document.getElementById('figmaLink').value.trim();
-            const serverUrl = document.getElementById('serverUrl').value.trim();
+            const description = document.getElementById('descriptionEditor').textContent.trim();
+            const slackChannel = document.getElementById('slackChannel').value.trim();
 
             if (!taskName) {
                 showStatus('Please enter a task name', 'error');
@@ -1555,10 +2811,38 @@
                 return;
             }
 
-            if (!serverUrl) {
-                showStatus('Please enter your Vercel URL', 'error');
+            if (!description) {
+                showStatus('Please enter a description', 'error');
                 return;
             }
+
+            if (!slackChannel) {
+                showStatus('Please select a Slack channel', 'error');
+                return;
+            }
+
+            // Update confirmation preview with same content as main preview
+            const previewContent = document.getElementById('previewContent').innerHTML;
+            document.getElementById('confirmationPreviewContent').innerHTML = previewContent;
+
+            // Show confirmation modal
+            document.getElementById('confirmationModal').classList.add('show');
+        }
+
+        // Close confirmation modal
+        function closeConfirmation() {
+            document.getElementById('confirmationModal').classList.remove('show');
+        }
+
+        // Confirm and actually send to Slack
+        async function confirmSend() {
+            // Close the modal
+            closeConfirmation();
+
+            // Now proceed with actual sending
+            const taskName = document.getElementById('taskName').value.trim();
+            const clickupLink = document.getElementById('clickupLink').value.trim();
+            const figmaLink = document.getElementById('figmaLink').value.trim();
 
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
@@ -1570,7 +2854,7 @@
                 // Convert HTML to Slack markdown format
                 const descriptionEditor = document.getElementById('descriptionEditor');
                 const description = convertHtmlToSlackMarkdown(descriptionEditor);
-                const webhookUrl = 'WEBHOOK_URL_PLACEHOLDER';
+                const webhookUrl = document.getElementById('slackChannel').value.trim();
 
                 const commitTypes = {
                     feat: 'NEW FEATURE FOR',
@@ -1597,12 +2881,14 @@
                 const blocks = [];
                 
                 // Add checkmarks and title as header for final design
+                const titleWithDescription = description ? `${titleText} ${description}` : titleText;
+
                 if (selectedCommitType === 'final') {
                     blocks.push({
                         type: "section",
                         text: {
                             type: "mrkdwn",
-                            text: `:checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4:\n*${commitTypes[selectedCommitType]}:* ${titleText}`
+                            text: `:checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4:\n*${commitTypes[selectedCommitType]}:*\n${titleWithDescription}`
                         }
                     });
                 } else {
@@ -1610,18 +2896,7 @@
                         type: "section",
                         text: {
                             type: "mrkdwn",
-                            text: `*${commitTypes[selectedCommitType]}:* ${titleText}`
-                        }
-                    });
-                }
-                
-                // Add description if provided
-                if (description) {
-                    blocks.push({
-                        type: "section",
-                        text: {
-                            type: "mrkdwn",
-                            text: description
+                            text: `*${commitTypes[selectedCommitType]}:*\n${titleWithDescription}`
                         }
                     });
                 }
@@ -1663,7 +2938,7 @@
                     blocks: blocks
                 };
 
-                const endpoint = `${serverUrl}/api/send-to-slack`;
+                const endpoint = `${SERVER_URL}/api/send-to-slack`;
 
                 const response = await fetch(endpoint, {
                     method: 'POST',
@@ -1679,8 +2954,19 @@
                 const result = await response.json();
 
                 if (result.success) {
+                    // Save acknowledgments for future use
+                    saveAcknowledgments();
+
+                    // Show success with animation
                     showStatus('✅ Design commit sent successfully!', 'success');
-                    clearForm();
+                    submitBtn.textContent = '✓ Sent Successfully!';
+                    submitBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+
+                    // Clear form after short delay
+                    setTimeout(() => {
+                        clearForm();
+                        submitBtn.style.background = '';
+                    }, 2000);
                 } else {
                     throw new Error(result.error || 'Unknown error');
                 }
@@ -1689,8 +2975,10 @@
                 console.error('Error:', error);
                 showStatus(`❌ Error: ${error.message}`, 'error');
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = '🚀 Send Design Commit';
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '🚀 Send Design Commit';
+                }, 2000);
             }
         }
 
@@ -1699,11 +2987,20 @@
             document.getElementById('clickupLink').value = '';
             document.getElementById('figmaLink').value = '';
             document.getElementById('descriptionEditor').textContent = '';
+            document.getElementById('slackChannel').value = '';
             acknowledgedBy = [];
             ccUsers = [];
             renderAcknowledgedByTags();
             renderCcTags();
+
+            // Clear field feedback
+            showFieldFeedback('taskName', 'taskNameFeedback', '');
+            showFieldFeedback('clickupLink', 'clickupLinkFeedback', '');
+            showFieldFeedback('figmaLink', 'figmaLinkFeedback', '');
+            showFieldFeedback('slackChannel', 'slackChannelFeedback', '');
+
             updatePreview();
+            validateForm();
         }
 
         function showStatus(message, type) {
