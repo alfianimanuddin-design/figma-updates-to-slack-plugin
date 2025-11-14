@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Design Commit</title>
+    <title>Figma to Slack Notifier</title>
     <style>
         * {
             margin: 0;
@@ -1046,9 +1046,400 @@
             cursor: not-allowed;
             transform: none;
         }
+
+        /* Welcome Modal Styles */
+        .welcome-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .welcome-overlay.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .welcome-modal {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .welcome-content {
+            color: white;
+        }
+
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .welcome-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            display: block;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .welcome-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        .welcome-body {
+            margin-bottom: 28px;
+        }
+
+        .welcome-steps {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .welcome-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .welcome-step-number {
+            background: white;
+            color: #667eea;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .welcome-step-content {
+            flex: 1;
+        }
+
+        .welcome-step-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .welcome-step-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.5;
+        }
+
+        .welcome-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-feature {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            color: white;
+        }
+
+        .welcome-feature-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .welcome-progress {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .welcome-progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .welcome-progress-dot.active {
+            background: white;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .welcome-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .welcome-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .welcome-btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .welcome-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .welcome-btn-primary {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .welcome-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-link {
+            color: white;
+            text-decoration: underline;
+            cursor: pointer;
+            opacity: 0.9;
+        }
+
+        .welcome-link:hover {
+            opacity: 1;
+        }
+
+        .welcome-note {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+    <!-- Welcome Modal -->
+    <div class="welcome-overlay" id="welcomeModal">
+        <div class="welcome-modal">
+            <div class="welcome-content">
+                <!-- Step 1: Welcome -->
+                <div class="welcome-step-content-wrapper" id="welcomeStep1">
+                    <div class="welcome-header">
+                        <span class="welcome-icon">🎨</span>
+                        <h2 class="welcome-title">Welcome to Figma Updates!</h2>
+                        <p class="welcome-subtitle">Share design updates to Slack with beautiful, Git-style commit messages.</p>
+                    </div>
+
+                    <div class="welcome-body">
+                        <div class="welcome-features">
+                            <div class="welcome-feature">
+                                <span class="welcome-feature-icon">✨</span>
+                                <strong>Git-Style Commits</strong><br>
+                                5 commit types
+                            </div>
+                            <div class="welcome-feature">
+                                <span class="welcome-feature-icon">👥</span>
+                                <strong>@Mentions</strong><br>
+                                Tag teammates
+                            </div>
+                            <div class="welcome-feature">
+                                <span class="welcome-feature-icon">📝</span>
+                                <strong>Rich Text</strong><br>
+                                Formatted descriptions
+                            </div>
+                            <div class="welcome-feature">
+                                <span class="welcome-feature-icon">⚡</span>
+                                <strong>One-Click</strong><br>
+                                Instant posting
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="welcome-progress">
+                        <div class="welcome-progress-dot active"></div>
+                        <div class="welcome-progress-dot"></div>
+                        <div class="welcome-progress-dot"></div>
+                    </div>
+
+                    <div class="welcome-actions">
+                        <button class="welcome-btn welcome-btn-secondary" onclick="skipWelcome()">Skip Tour</button>
+                        <button class="welcome-btn welcome-btn-primary" onclick="nextWelcomeStep()">Next →</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Setup -->
+                <div class="welcome-step-content-wrapper" id="welcomeStep2" style="display: none;">
+                    <div class="welcome-header">
+                        <span class="welcome-icon">🔑</span>
+                        <h2 class="welcome-title">Quick Setup Required</h2>
+                        <p class="welcome-subtitle">One-time configuration to connect your Slack workspace.</p>
+                    </div>
+
+                    <div class="welcome-body">
+                        <div class="welcome-steps">
+                            <div class="welcome-step">
+                                <div class="welcome-step-number">1</div>
+                                <div class="welcome-step-content">
+                                    <div class="welcome-step-title">Create Slack App</div>
+                                    <div class="welcome-step-desc">Get your Bot Token from api.slack.com/apps</div>
+                                </div>
+                            </div>
+                            <div class="welcome-step">
+                                <div class="welcome-step-number">2</div>
+                                <div class="welcome-step-content">
+                                    <div class="welcome-step-title">Configure in Settings</div>
+                                    <div class="welcome-step-desc">Add token, fetch users & channels</div>
+                                </div>
+                            </div>
+                            <div class="welcome-step">
+                                <div class="welcome-step-number">3</div>
+                                <div class="welcome-step-content">
+                                    <div class="welcome-step-title">Start Committing!</div>
+                                    <div class="welcome-step-desc">Share updates with your team</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="welcome-note">
+                            💡 <strong>Need help?</strong> Check out our <a class="welcome-link" href="https://github.com/alfianimanuddin-design/figma-updates-to-slack-plugin/blob/master/SETUP_GUIDE.md" target="_blank">complete setup guide</a>
+                        </div>
+                    </div>
+
+                    <div class="welcome-progress">
+                        <div class="welcome-progress-dot"></div>
+                        <div class="welcome-progress-dot active"></div>
+                        <div class="welcome-progress-dot"></div>
+                    </div>
+
+                    <div class="welcome-actions">
+                        <button class="welcome-btn welcome-btn-secondary" onclick="previousWelcomeStep()">← Back</button>
+                        <button class="welcome-btn welcome-btn-primary" onclick="nextWelcomeStep()">Next →</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Ready -->
+                <div class="welcome-step-content-wrapper" id="welcomeStep3" style="display: none;">
+                    <div class="welcome-header">
+                        <span class="welcome-icon">🚀</span>
+                        <h2 class="welcome-title">You're All Set!</h2>
+                        <p class="welcome-subtitle">Ready to share your first design update?</p>
+                    </div>
+
+                    <div class="welcome-body">
+                        <div class="welcome-note">
+                            <strong>Next steps:</strong><br>
+                            1. Click the <strong>⚙️ Settings</strong> button (top right)<br>
+                            2. Add your Slack Bot Token<br>
+                            3. Fetch users and configure channels<br>
+                            4. Make your first commit!
+                        </div>
+
+                        <div class="welcome-steps">
+                            <div class="welcome-step">
+                                <div class="welcome-step-number">📖</div>
+                                <div class="welcome-step-content">
+                                    <div class="welcome-step-title">Setup Guide</div>
+                                    <div class="welcome-step-desc">
+                                        <a class="welcome-link" href="https://github.com/alfianimanuddin-design/figma-updates-to-slack-plugin/blob/master/SETUP_GUIDE.md" target="_blank">Complete instructions</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="welcome-step">
+                                <div class="welcome-step-number">💬</div>
+                                <div class="welcome-step-content">
+                                    <div class="welcome-step-title">Need Help?</div>
+                                    <div class="welcome-step-desc">
+                                        <a class="welcome-link" href="https://github.com/alfianimanuddin-design/figma-updates-to-slack-plugin/issues" target="_blank">Report issues on GitHub</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="welcome-progress">
+                        <div class="welcome-progress-dot"></div>
+                        <div class="welcome-progress-dot"></div>
+                        <div class="welcome-progress-dot active"></div>
+                    </div>
+
+                    <div class="welcome-actions">
+                        <button class="welcome-btn welcome-btn-secondary" onclick="previousWelcomeStep()">← Back</button>
+                        <button class="welcome-btn welcome-btn-primary" onclick="closeWelcome()">Let's Go! 🎉</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="form-container">
             <!-- Header Controls -->
@@ -1059,7 +1450,7 @@
                 </div>
                 <h1 class="page-title">
                     <!-- <span>🎨</span> -->
-                    Design Commit
+                    Figma to Slack Notifier
                 </h1>
                 <button class="settings-btn" onclick="openSettings()" title="Settings">⚙️</button>
             </div>
@@ -1201,7 +1592,7 @@
         <div class="fixed-cta">
             <div class="cta-container">
                 <button type="button" class="submit-btn" id="submitBtn" onclick="commitToSlack()" disabled title="Keyboard shortcut: Cmd/Ctrl + Enter">
-                    🚀 Send Design Commit
+                    Share Final Design to Slack
                 </button>
                 <p style="text-align: center; font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); margin-top: 8px; margin-bottom: 0;">
                     💡 Tip: Press <kbd style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 10px;">Cmd/Ctrl + Enter</kbd> to send
@@ -1231,8 +1622,17 @@
 
                         <div class="form-group">
                             <label for="slackToken">Slack Bot Token</label>
-                            <input type="password" id="slackToken" class="input-field"
-                                   placeholder="xoxb-your-bot-token-here">
+                            <div style="position: relative;">
+                                <input type="password" id="slackToken" class="input-field"
+                                       placeholder="xoxb-your-bot-token-here"
+                                       style="padding-right: 40px;">
+                                <button type="button"
+                                        id="toggleSlackToken"
+                                        onclick="togglePasswordVisibility('slackToken')"
+                                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 4px 8px; font-size: 16px; color: var(--figma-color-text-secondary, #6b7280); display: flex; align-items: center; justify-content: center;">
+                                    👁️
+                                </button>
+                            </div>
                         </div>
 
                         <button class="fetch-btn" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);" onclick="saveSlackToken()">
@@ -1374,7 +1774,7 @@
             <!-- Compact Header with Gradient -->
             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px 24px; text-align: center; border-radius: 12px 12px 0 0;">
                 <div style="font-size: 48px; margin-bottom: 8px;">👋</div>
-                <h2 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 8px 0;">Welcome to Design Commit!</h2>
+                <h2 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 8px 0;">Welcome to Figma to Slack Notifier!</h2>
                 <p style="font-size: 12px; color: rgba(255,255,255,0.9); margin: 0;">Share your Figma designs to Slack with style</p>
             </div>
 
@@ -1400,7 +1800,7 @@
                         <div style="font-size: 20px; flex-shrink: 0;">📢</div>
                         <div style="flex: 1;">
                             <div style="font-size: 12px; font-weight: 600; color: var(--figma-color-text, #1e1e1e); margin-bottom: 2px;">Configure Channels</div>
-                            <div style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); line-height: 1.4;">Connect channels to post your design commits</div>
+                            <div style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); line-height: 1.4;">Connect channels to post your design notifications</div>
                         </div>
                     </div>
                 </div>
@@ -1718,8 +2118,7 @@
                     }
 
                     if (tokenStatusEl) {
-                        const maskedToken = msg.data.substring(0, 10) + '•••••••';
-                        tokenStatusEl.textContent = `Token saved: ${maskedToken}`;
+                        tokenStatusEl.textContent = '✅ Token configured';
                         tokenStatusEl.style.color = '#065f46';
                     }
                 }
@@ -1852,6 +2251,22 @@
             }
         }
 
+        // Toggle Password Visibility
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const toggleBtn = document.getElementById('toggleSlackToken');
+
+            if (!input || !toggleBtn) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
         // Slack Token Management
         async function saveSlackToken() {
             const tokenInput = document.getElementById('slackToken');
@@ -1906,8 +2321,7 @@
             statusEl.style.display = 'block';
 
             // Update status text
-            const maskedToken = token.substring(0, 10) + '•••••••';
-            tokenStatusEl.textContent = `Token saved: ${maskedToken}`;
+            tokenStatusEl.textContent = '✅ Token configured';
             tokenStatusEl.style.color = '#065f46';
 
             setTimeout(() => {
@@ -1928,8 +2342,7 @@
                     }
 
                     if (tokenStatusEl) {
-                        const maskedToken = saved.substring(0, 10) + '•••••••';
-                        tokenStatusEl.textContent = `Token saved: ${maskedToken}`;
+                        tokenStatusEl.textContent = '✅ Token configured';
                         tokenStatusEl.style.color = '#065f46';
                     }
                     return;
@@ -2159,7 +2572,7 @@
             let html = '<div style="max-height: 300px; overflow-y: auto;">';
 
             slackChannels.forEach(channel => {
-                const savedWebhook = channelConfigs[channel.id] || '';
+                const savedWebhook = (channelConfigs[channel.id] && channelConfigs[channel.id].webhook) || '';
                 html += `
                     <div style="margin-bottom: 12px; padding: 12px; background: var(--figma-color-bg-secondary, #f8f9fa); border-radius: 8px;">
                         <div style="display: flex; align-items: center; margin-bottom: 8px;">
@@ -2861,7 +3274,7 @@
             submitBtn.disabled = true;
             submitBtn.textContent = '🚀 Sending to Slack...';
             
-            showStatus('Sending professional design commit...', 'loading');
+            showStatus('Sending notification to Slack...', 'loading');
 
             try {
                 // Convert HTML to Slack markdown format
@@ -2894,14 +3307,14 @@
                 const blocks = [];
                 
                 // Add checkmarks and title as header for final design
-                const titleWithDescription = description ? `${titleText} ${description}` : titleText;
+                const titleWithDescription = description ? `${titleText}\n${description}` : titleText;
 
                 if (selectedCommitType === 'final') {
                     blocks.push({
                         type: "section",
                         text: {
                             type: "mrkdwn",
-                            text: `:checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4:\n*${commitTypes[selectedCommitType]}:*\n${titleWithDescription}`
+                            text: `:checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4:\n*${commitTypes[selectedCommitType]}:* ${titleWithDescription}`
                         }
                     });
                 } else {
@@ -2971,7 +3384,7 @@
                     saveAcknowledgments();
 
                     // Show success with animation
-                    showStatus('✅ Design commit sent successfully!', 'success');
+                    showStatus('✅ Notification sent successfully!', 'success');
                     submitBtn.textContent = '✓ Sent Successfully!';
                     submitBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
 
@@ -2990,7 +3403,7 @@
             } finally {
                 setTimeout(() => {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = '🚀 Send Design Commit';
+                    submitBtn.textContent = '🚀 Send to Slack';
                 }, 2000);
             }
         }
@@ -3031,6 +3444,108 @@
 
         // Periodic server check
         setInterval(checkServerStatus, 30000);
+
+        // ========================================
+        // Welcome Modal Logic
+        // ========================================
+
+        let currentWelcomeStep = 1;
+
+        // Check if user has seen welcome
+        function checkFirstTimeUser() {
+            try {
+                const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+                if (!hasSeenWelcome) {
+                    // First time user - show welcome modal
+                    setTimeout(() => {
+                        showWelcomeModal();
+                    }, 500); // Small delay for smooth appearance
+                }
+            } catch (e) {
+                console.log('LocalStorage not available for welcome check');
+            }
+        }
+
+        // Show welcome modal
+        function showWelcomeModal() {
+            const modal = document.getElementById('welcomeModal');
+            if (modal) {
+                modal.classList.add('show');
+                currentWelcomeStep = 1;
+                showWelcomeStep(1);
+            }
+        }
+
+        // Hide welcome modal
+        function hideWelcomeModal() {
+            const modal = document.getElementById('welcomeModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // Show specific welcome step
+        function showWelcomeStep(step) {
+            // Hide all steps
+            for (let i = 1; i <= 3; i++) {
+                const stepEl = document.getElementById(`welcomeStep${i}`);
+                if (stepEl) {
+                    stepEl.style.display = 'none';
+                }
+            }
+
+            // Show current step
+            const currentStepEl = document.getElementById(`welcomeStep${step}`);
+            if (currentStepEl) {
+                currentStepEl.style.display = 'block';
+            }
+
+            currentWelcomeStep = step;
+        }
+
+        // Next step
+        function nextWelcomeStep() {
+            if (currentWelcomeStep < 3) {
+                showWelcomeStep(currentWelcomeStep + 1);
+            }
+        }
+
+        // Previous step
+        function previousWelcomeStep() {
+            if (currentWelcomeStep > 1) {
+                showWelcomeStep(currentWelcomeStep - 1);
+            }
+        }
+
+        // Skip welcome
+        function skipWelcome() {
+            closeWelcome();
+        }
+
+        // Close welcome and mark as seen
+        function closeWelcome() {
+            hideWelcomeModal();
+            try {
+                localStorage.setItem('hasSeenWelcome', 'true');
+            } catch (e) {
+                console.log('LocalStorage not available');
+            }
+        }
+
+        // Add option to show welcome again from settings
+        function showWelcomeAgain() {
+            try {
+                localStorage.removeItem('hasSeenWelcome');
+            } catch (e) {
+                console.log('LocalStorage not available');
+            }
+            showWelcomeModal();
+        }
+
+        // Initialize welcome check on page load
+        window.addEventListener('load', () => {
+            checkFirstTimeUser();
+        });
     </script>
 </body>
 </html>
