@@ -2097,7 +2097,9 @@
                 const result = await response.json();
 
                 if (!result.success) {
-                    throw new Error(result.error || result.details || 'Failed to fetch channels');
+                    const errorMsg = result.details ? `${result.error}: ${result.details}` : (result.error || 'Failed to fetch channels');
+                    console.error('Slack API error details:', result);
+                    throw new Error(errorMsg);
                 }
 
                 slackChannels = result.data.channels || [];
@@ -2122,10 +2124,13 @@
                 statusEl.textContent = `❌ Error: ${error.message}`;
                 statusEl.className = 'user-count';
 
-                if (error.message === 'invalid_auth' || error.message === 'not_authed') {
-                    statusEl.textContent += ' - Check your token.';
-                } else if (error.message === 'missing_scope') {
-                    statusEl.textContent += ' - Add scopes: channels:read, groups:read';
+                // Check for specific Slack error codes in the message
+                if (error.message.includes('invalid_auth') || error.message.includes('not_authed')) {
+                    statusEl.textContent += '\n💡 Your token is invalid. Please reinstall your Slack app and get a new token.';
+                } else if (error.message.includes('missing_scope')) {
+                    statusEl.textContent += '\n💡 Add these scopes: channels:read, groups:read, then reinstall your app.';
+                } else if (error.message.includes('token_revoked')) {
+                    statusEl.textContent += '\n💡 Your token was revoked. Please reinstall your Slack app and get a new token.';
                 }
             } finally {
                 fetchBtn.disabled = false;
