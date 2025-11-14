@@ -1,234 +1,360 @@
-# Design Commit - Figma Plugin
+# 🎨 Figma Updates to Slack
 
-A Figma plugin that lets you commit and share your design updates to Slack with Git-style commit messages.
+> Share your design updates to Slack with beautiful, Git-style commit messages — right from Figma!
 
-## 🚀 Features
-
-- **Git-style commits**: Feature, Fix, Update, Final, Review types
-- **Auto file detection**: Current file name, page, and direct Figma links
-- **Selection awareness**: Include info about selected elements
-- **Smart settings**: Save Slack webhook URL locally
-- **Rich Slack messages**: Professional formatting with action buttons
-
-## 📁 File Structure
-
-```
-design-commit-plugin/
-├── manifest.json       # Plugin configuration
-├── code.ts            # Main plugin logic (TypeScript)
-├── code.js            # Compiled JavaScript (generated)
-├── ui.html            # Plugin interface
-├── package.json       # Dependencies (optional)
-├── tsconfig.json      # TypeScript config (optional)
-└── README.md          # This file
-```
-
-## 🛠️ Setup
-
-### Option 1: Quick Setup (JavaScript only)
-1. Create a new folder for your plugin
-2. Copy `manifest.json` and `ui.html` files
-3. Convert `code.ts` to `code.js` manually (remove TypeScript types)
-4. Import plugin in Figma
-
-### Option 2: Full TypeScript Setup
-1. Create a new folder for your plugin
-2. Copy all files
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Compile TypeScript:
-   ```bash
-   npm run build
-   ```
-5. Import plugin in Figma
-
-## 📦 Installation in Figma
-
-1. In Figma, go to **Plugins** → **Development** → **Import plugin from manifest**
-2. Select your `manifest.json` file
-3. The plugin will appear in your development plugins
-
-## 🌐 Server Configuration
-
-This plugin uses a backend server to proxy requests to Slack APIs.
-
-### Production (Default)
-The plugin is pre-configured to use the production server:
-```
-https://figma-slack-bridge.vercel.app
-```
-
-### Development Setup
-If you're running the server locally for development:
-
-1. **Start the local server**
-   ```bash
-   cd figma-slack-bridge
-   npm install
-   vercel dev
-   ```
-   The server will run at `http://localhost:3000`
-
-2. **Update the plugin to use local server**
-
-   In [ui.html](ui.html), change line 1360:
-
-   ```javascript
-   // For local development
-   const SERVER_URL = 'http://localhost:3000';
-
-   // For production (default)
-   // const SERVER_URL = 'https://figma-slack-bridge.vercel.app';
-   ```
-
-3. **Reload the plugin in Figma**
-   - Right-click the plugin → Development → Reload
-
-**Important:** Remember to switch back to the production URL before publishing or sharing your plugin!
-
-For more details about the server, see [figma-slack-bridge/README.md](figma-slack-bridge/README.md).
-
-## ⚙️ Slack Setup
-
-1. Go to your Slack workspace
-2. Create a new app at https://api.slack.com/apps
-3. Enable **Incoming Webhooks**
-4. Create a webhook for your desired channel
-5. Copy the webhook URL
-6. Paste it in the plugin settings (one-time setup)
-
-## 🎯 Usage
-
-1. Open the plugin in any Figma file
-2. Configure Slack webhook URL in Settings (first time only)
-3. For each design update:
-   - Select commit type (✨ Feature, 🐛 Fix, 🔄 Update, 🎯 Final, 👀 Review)
-   - Write commit message (e.g., "Add new checkout flow design")
-   - Add optional description
-   - Choose to include selection info
-   - Click "Commit to Slack"
-
-## 📝 Example Slack Message
-
-```
-✨ Add new homepage hero section
-
-File: Mobile App Redesign
-Page: Homepage
-Type: FEATURE
-Date: 3/15/2024
-
-Description:
-Updated hero section with improved typography and call-to-action buttons. 
-Implemented new brand colors and responsive layout.
-
-Selection: 3 elements selected
-Types: Frame, Text, Button
-
-[Open in Figma] [View Page]
-```
-
-## 🔧 Development
-
-### Building TypeScript
-```bash
-# One-time build
-npm run build
-
-# Watch mode (rebuilds on changes)
-npm run watch
-```
-
-### Customizing the Plugin
-
-**Adding new commit types:**
-1. Update `commitTypeEmojis` object in `code.ts`
-2. Add new button in `ui.html` commit-types section
-3. Rebuild and reload plugin
-
-**Changing Slack message format:**
-1. Modify `slackPayload` structure in `handleDesignCommit` function
-2. See [Slack Block Kit Builder](https://app.slack.com/block-kit-builder) for formatting options
-
-**Adding file screenshots:**
-1. Use `figma.exportAsync()` in the plugin code
-2. Upload image to a service (AWS S3, Cloudinary, etc.)
-3. Include image URL in Slack message
-
-## 🐛 Troubleshooting
-
-### Plugin won't load
-- Check that all files are in the same directory
-- Ensure `manifest.json` is valid JSON
-- Verify `code.js` exists (compile from `code.ts` if needed)
-
-### Slack messages not sending
-- Verify webhook URL is correct and active
-- Check network permissions in manifest.json
-- Test webhook URL with a simple curl command:
-  ```bash
-  curl -X POST -H 'Content-type: application/json' \
-    --data '{"text":"Test message"}' \
-    YOUR_WEBHOOK_URL
-  ```
-
-### TypeScript compilation errors
-- Install dependencies: `npm install`
-- Check TypeScript version compatibility
-- Verify `@figma/plugin-typings` is installed
-
-### UI not displaying correctly
-- Check browser console for JavaScript errors
-- Verify all CSS variables are supported in Figma
-- Test with different Figma themes (light/dark)
-
-## 🔒 Security Notes
-
-- Webhook URLs are stored locally in Figma's client storage
-- No data is sent to external servers except Slack
-- Network access is restricted to `hooks.slack.com` only
-- Consider using environment variables for team deployments
-
-## 📚 Resources
-
-- [Figma Plugin API Documentation](https://www.figma.com/plugin-docs/)
-- [Slack Block Kit Builder](https://app.slack.com/block-kit-builder)
-- [Slack Incoming Webhooks](https://api.slack.com/messaging/webhooks)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-
-## 🎨 Customization Ideas
-
-### Advanced Features to Add
-1. **Design Screenshots**: Automatically capture and include design previews
-2. **Version Comparison**: Compare with previous commits
-3. **Team Mentions**: Auto-mention relevant team members based on file ownership
-4. **Project Integration**: Link to Jira, Asana, or other project management tools
-5. **Approval Workflow**: Add approve/reject buttons in Slack
-6. **Change Detection**: Highlight what specifically changed
-7. **Batch Commits**: Commit multiple pages/files at once
-
-### UI Enhancements
-1. **Dark/Light Mode**: Enhanced theme support
-2. **Keyboard Shortcuts**: Quick commit with Cmd+Enter
-3. **Recent Messages**: Show history of recent commits
-4. **Templates**: Pre-defined commit message templates
-5. **File Browser**: Browse and commit from multiple files
-
-## 🤝 Contributing
-
-Feel free to extend this plugin for your team's needs:
-
-1. Fork the code
-2. Add your enhancements
-3. Test thoroughly in your Figma environment
-4. Share improvements with the community
-
-## 📄 License
-
-MIT License - feel free to use and modify for your projects.
+[![Made for Figma](https://img.shields.io/badge/Made%20for-Figma-F24E1E?style=flat&logo=figma)](https://www.figma.com)
+[![Powered by Slack](https://img.shields.io/badge/Powered%20by-Slack-4A154B?style=flat&logo=slack)](https://slack.com)
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=flat&logo=vercel)](https://vercel.com)
 
 ---
 
-**Happy designing and committing! 🎨✨**
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%">
+
+### 🏷️ **Git-Style Commits**
+Choose from 5 commit types:
+- ✨ **Feature** - New designs & components
+- 🐛 **Fix** - Bug fixes & corrections
+- 🔄 **Update** - Improvements to existing work
+- 🎯 **Final** - Ready for handoff
+- 👀 **Review** - Request feedback
+
+</td>
+<td width="50%">
+
+### 👥 **Team Collaboration**
+- 🔍 **User Autocomplete** - @mention teammates
+- 📢 **Channel Selection** - Post to any channel
+- 💬 **Rich Descriptions** - Formatted text editor
+- 🔗 **Direct Links** - Jump straight to Figma
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🤖 **Smart Detection**
+- 📄 Auto-detects file name
+- 📑 Captures current page
+- 🎯 Tracks selected elements
+- ⏰ Timestamps everything
+
+</td>
+<td width="50%">
+
+### 🚀 **Zero Configuration***
+- 💾 Saves settings locally
+- 🔄 One-time Slack setup
+- ⚡ Instant deployment
+- 🌐 Works everywhere
+
+<sub>*After initial Slack app setup</sub>
+
+</td>
+</tr>
+</table>
+
+---
+
+## 📸 Screenshots
+
+<!-- TODO: Add screenshots here -->
+> **Coming soon!** Screenshots of the plugin in action.
+
+### Plugin Interface
+<!-- ![Plugin Interface](./docs/screenshots/plugin-ui.png) -->
+
+### Slack Message Example
+<!-- ![Slack Message](./docs/screenshots/slack-message.png) -->
+
+### Settings Panel
+<!-- ![Settings](./docs/screenshots/settings-panel.png) -->
+
+---
+
+## 🚀 Quick Start
+
+### For Users
+
+**📖 New to this?** Follow the complete [Setup Guide](./SETUP_GUIDE.md) for step-by-step instructions.
+
+**⚡ Quick Setup (5 minutes):**
+
+1. **Create a Slack App** at [api.slack.com/apps](https://api.slack.com/apps)
+2. **Add these OAuth Scopes:**
+   - `channels:read`, `groups:read`, `users:read`, `users:read.email`, `chat:write`, `incoming-webhook`
+3. **Install the plugin** in Figma (Development → Import plugin from manifest)
+4. **Configure in plugin settings:**
+   - Paste your Slack Bot Token
+   - Fetch your team members
+   - Configure channels
+5. **Start committing!** 🎉
+
+👉 **Detailed guide:** [SETUP_GUIDE.md](./SETUP_GUIDE.md)
+
+---
+
+## 🎯 How It Works
+
+```mermaid
+graph LR
+    A[Design in Figma] --> B[Open Plugin]
+    B --> C[Write Commit Message]
+    C --> D[Select Channel]
+    D --> E[Click Commit]
+    E --> F[🎉 Posted to Slack!]
+```
+
+1. **Make design changes** in Figma
+2. **Open the plugin** (Plugins → Figma Updates to Slack)
+3. **Write a commit message** and select type
+4. **Add details** (description, @mentions, etc.)
+5. **Select channel** and click **"Commit to Slack"**
+6. **Done!** Your team sees it instantly in Slack
+
+---
+
+## 💬 Example Slack Messages
+
+### Feature Commit
+```
+✨ FEATURE: Redesigned checkout flow
+
+File: E-commerce Redesign
+Page: Checkout V2
+By: @jane
+
+Description:
+• Simplified to 3 steps instead of 5
+• Added trust badges and security icons
+• Improved mobile responsiveness
+
+[Open in Figma] [View Page]
+━━━━━━━━━━━━━━━━━━━━━
+🕐 Nov 14, 2025 at 3:45 PM
+```
+
+### Bug Fix Commit
+```
+🐛 FIX: Corrected button alignment on mobile
+
+File: Mobile App V3
+Page: Home Screen
+By: @john • CC: @design-team
+
+Fixed button alignment issues on screens < 375px width.
+Tested on iPhone SE and Galaxy S20.
+
+[Open in Figma] [View Page]
+━━━━━━━━━━━━━━━━━━━━━
+🕐 Nov 14, 2025 at 2:30 PM
+```
+
+---
+
+## 🛠️ Technology Stack
+
+- **Frontend**: Vanilla JavaScript + HTML/CSS
+- **Backend**: Node.js serverless functions (Vercel)
+- **APIs**: Slack Web API + Slack Webhooks
+- **Storage**: Figma Client Storage
+- **Deployment**: Vercel (auto-deploys from GitHub)
+
+---
+
+## 📁 Project Structure
+
+```
+figma-updates-to-slack-plugin/
+├── 📄 manifest.json                 # Plugin configuration
+├── 📄 code.js                       # Main plugin logic
+├── 📄 ui.html                       # Plugin interface (HTML/CSS/JS)
+├── 📄 package.json                  # Dependencies
+├── 📁 figma-slack-bridge/          # Backend serverless functions
+│   └── 📁 api/
+│       ├── fetch-slack-users.js    # Fetch team members
+│       ├── fetch-slack-channels.js # Fetch channels
+│       └── send-to-slack.js        # Send messages
+├── 📄 SETUP_GUIDE.md               # User setup instructions
+├── 📄 TODO_FOR_PUBLIC_RELEASE.md   # Development checklist
+└── 📄 README.md                     # This file
+```
+
+---
+
+## 🔧 Development
+
+### Prerequisites
+- Node.js 18+
+- Vercel CLI (for backend development)
+- Figma account
+
+### Local Development
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/alfianimanuddin-design/figma-updates-to-slack-plugin.git
+   cd figma-updates-to-slack-plugin
+   ```
+
+2. **Install dependencies (for backend development)**
+   ```bash
+   cd figma-slack-bridge
+   npm install
+   ```
+
+3. **Run backend locally**
+   ```bash
+   vercel dev
+   # Server runs at http://localhost:3000
+   ```
+
+4. **Update plugin to use local server**
+   - In `ui.html`, change `SERVER_URL` to `http://localhost:3000`
+
+5. **Import plugin in Figma**
+   - Figma → Plugins → Development → Import plugin from manifest
+   - Select `manifest.json`
+
+6. **Make changes and test!**
+   - Edit `ui.html` or `code.js`
+   - Reload plugin in Figma
+
+### Deployment
+
+Backend auto-deploys to Vercel when you push to GitHub:
+```bash
+git add .
+git commit -m "Your changes"
+git push
+# Vercel automatically deploys! 🚀
+```
+
+---
+
+## 🎨 Customization
+
+### Add Custom Commit Types
+
+1. Edit the commit types in `ui.html`:
+```html
+<button class="commit-type" data-type="DOCS" onclick="selectCommitType('DOCS', '📚')">
+    📚 Docs
+</button>
+```
+
+2. Reload the plugin
+
+### Change Slack Message Format
+
+Edit the `payload` structure in `ui.html` around line 800:
+```javascript
+const payload = {
+    blocks: [
+        {
+            type: "section",
+            text: {
+                type: "mrkdwn",
+                text: `${commitEmoji} *${commitType}:* ${taskName}`
+            }
+        }
+        // Add more blocks...
+    ]
+};
+```
+
+Use [Slack Block Kit Builder](https://app.slack.com/block-kit-builder) to design your messages.
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| ❌ "Slack API error: invalid_auth" | Token expired. Get a new one from Slack and update in settings |
+| ❌ "No channels found" | Invite your bot to channels in Slack first |
+| ⏱️ "Rate limited" | Wait 1-2 minutes. Happens when clicking fetch too many times |
+| 🌐 "Server offline" | Check internet connection. Vercel may be redeploying |
+| 🔒 "Missing scope" | Add all required OAuth scopes and reinstall Slack app |
+
+### Still Having Issues?
+
+1. Check the [Setup Guide](./SETUP_GUIDE.md) troubleshooting section
+2. Search [GitHub Issues](https://github.com/alfianimanuddin-design/figma-updates-to-slack-plugin/issues)
+3. Create a new issue with:
+   - What you were trying to do
+   - Error message
+   - Screenshots
+
+---
+
+## 🚦 Roadmap
+
+**Current Version: 1.0.0**
+
+- [x] Core commit functionality
+- [x] Multiple commit types
+- [x] User autocomplete & @mentions
+- [x] Channel configuration
+- [x] Rich text editor for descriptions
+- [x] Backend API with rate limiting
+- [ ] First-time user onboarding
+- [ ] Design screenshots in Slack
+- [ ] Commit history & templates
+- [ ] Dark mode
+- [ ] Figma Community release
+
+See [TODO_FOR_PUBLIC_RELEASE.md](./TODO_FOR_PUBLIC_RELEASE.md) for full roadmap.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+MIT License - See [LICENSE](./LICENSE) for details.
+
+Feel free to use, modify, and distribute this plugin!
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with [Figma Plugin API](https://www.figma.com/plugin-docs/)
+- Powered by [Slack API](https://api.slack.com/)
+- Deployed on [Vercel](https://vercel.com)
+- Inspired by Git commit conventions
+
+---
+
+## 📞 Support & Community
+
+- 📖 [Setup Guide](./SETUP_GUIDE.md) - Complete setup instructions
+- 🐛 [Report Issues](https://github.com/alfianimanuddin-design/figma-updates-to-slack-plugin/issues)
+- 💡 [Request Features](https://github.com/alfianimanuddin-design/figma-updates-to-slack-plugin/issues/new)
+- ⭐ [Star on GitHub](https://github.com/alfianimanuddin-design/figma-updates-to-slack-plugin)
+
+---
+
+<div align="center">
+
+**Made with ❤️ for designers who love staying in sync**
+
+[⬆ Back to Top](#-figma-updates-to-slack)
+
+</div>
