@@ -2800,15 +2800,8 @@
 
         // Populate ClickUp tasks dropdown (from Consumer Solutions and Business Solutions folders)
         async function populateClickUpTasks() {
-            const taskSelect = document.getElementById('clickupTaskSelect');
-            if (!taskSelect) return;
-
-            // Show loading state
-            taskSelect.innerHTML = '<option value="">Loading tasks...</option>';
-            taskSelect.disabled = true;
-
             try {
-                console.log('[ClickUp] Fetching tasks from folders:', CLICKUP_FOLDER_IDS);
+                console.log('[ClickUp] Starting to fetch tasks from folders:', CLICKUP_FOLDER_IDS);
 
                 // Collect all lists from the 2 folders
                 const allLists = [];
