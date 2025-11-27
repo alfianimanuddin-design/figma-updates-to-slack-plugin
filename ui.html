@@ -1656,13 +1656,18 @@
 
                         <!-- Show dropdown if ClickUp is connected -->
                         <div id="clickupTaskDropdownContainer" style="display: none;">
-                            <input type="text" id="clickupTaskSearch" class="input-field"
-                                   placeholder="Search tasks..."
-                                   oninput="filterClickUpTasks()"
-                                   style="margin-bottom: 8px;">
-                            <select id="clickupTaskSelect" class="input-field" onchange="handleClickUpTaskSelection()" size="10">
-                                <option value="">Select a task...</option>
-                            </select>
+                            <div style="border: 1px solid var(--figma-color-border, #d1d5db); border-radius: 4px; overflow: hidden;">
+                                <input type="text" id="clickupTaskSearch"
+                                       placeholder="Search tasks..."
+                                       oninput="filterClickUpTasks()"
+                                       style="width: 100%; padding: 8px; border: none; border-bottom: 1px solid var(--figma-color-border, #d1d5db); outline: none; font-size: 12px; font-family: inherit; box-sizing: border-box;">
+                                <select id="clickupTaskSelect"
+                                        onchange="handleClickUpTaskSelection()"
+                                        size="10"
+                                        style="width: 100%; border: none; outline: none; font-size: 12px; font-family: inherit; padding: 4px 0; box-sizing: border-box;">
+                                    <option value="">Select a task...</option>
+                                </select>
+                            </div>
                             <p style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); margin: 4px 0 0 0;">
                                 <a href="#" onclick="showManualClickUpInput(); return false;" style="color: #6366f1;">Enter link manually instead</a>
                             </p>
