@@ -2792,11 +2792,11 @@
             }
         }
 
-        // Store selected workspace and space IDs
-        let selectedWorkspaceId = null;
-        let selectedSpaceId = null;
+        // Hardcoded workspace and space IDs for Design Team
+        const CLICKUP_WORKSPACE_ID = '3688330'; // Flip workspace
+        const CLICKUP_SPACE_ID = '3872753'; // Design Team space
 
-        // Populate ClickUp lists dropdown (auto-loads from Flip workspace > Design Team space)
+        // Populate ClickUp lists dropdown (from hardcoded Design Team space)
         async function populateClickUpTasks() {
             const listSelect = document.getElementById('clickupListSelect');
             if (!listSelect) return;
@@ -2806,30 +2806,7 @@
             listSelect.disabled = true;
 
             try {
-                // Load workspaces if not already loaded
-                if (clickupWorkspaces.length === 0) {
-                    await loadClickUpWorkspaces();
-                }
-
-                if (clickupWorkspaces.length === 0) {
-                    listSelect.innerHTML = '<option value="">No workspaces found</option>';
-                    return;
-                }
-
-                // Use first workspace (Flip)
-                const flipWorkspace = clickupWorkspaces[0];
-                selectedWorkspaceId = flipWorkspace.id;
-                console.log('[ClickUp] Using workspace:', flipWorkspace.name, flipWorkspace.id);
-
-                // Use first space (Design Team)
-                if (!flipWorkspace.spaces || flipWorkspace.spaces.length === 0) {
-                    listSelect.innerHTML = '<option value="">No spaces found in workspace</option>';
-                    return;
-                }
-
-                const designSpace = flipWorkspace.spaces[0];
-                selectedSpaceId = designSpace.id;
-                console.log('[ClickUp] Using space:', designSpace.name, designSpace.id);
+                console.log('[ClickUp] Using hardcoded space ID:', CLICKUP_SPACE_ID);
 
                 // Fetch lists for the space via backend
                 const response = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-lists', {
@@ -2839,7 +2816,7 @@
                     },
                     body: JSON.stringify({
                         accessToken: clickupAccessToken,
-                        spaceId: selectedSpaceId
+                        spaceId: CLICKUP_SPACE_ID
                     })
                 });
 
@@ -2888,7 +2865,7 @@
 
             try {
                 // Load tasks from selected list
-                clickupTasks = await loadClickUpTasks(selectedWorkspaceId, null, listId);
+                clickupTasks = await loadClickUpTasks(CLICKUP_WORKSPACE_ID, null, listId);
 
                 // Populate task dropdown
                 taskSelect.innerHTML = '<option value="">Select a task...</option>';
