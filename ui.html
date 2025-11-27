@@ -1655,17 +1655,14 @@
                         </label>
 
                         <!-- Show dropdown if ClickUp is connected -->
-                        <div id="clickupTaskDropdownContainer" style="display: none;">
+                        <div id="clickupTaskDropdownContainer" style="display: none; position: relative;">
                             <input type="text" id="clickupTaskSearch" class="input-field"
                                    placeholder="Search tasks..."
+                                   onfocus="showClickUpDropdown()"
                                    oninput="filterClickUpTasks()"
-                                   style="margin-bottom: 8px;">
-                            <select id="clickupTaskSelect" class="input-field"
-                                    onchange="handleClickUpTaskSelection()"
-                                    size="8"
-                                    style="width: 100%;">
-                                <option value="">Loading tasks...</option>
-                            </select>
+                                   autocomplete="off">
+                            <div id="clickupTaskList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--figma-color-bg, white); border: 1px solid var(--figma-color-border, #d1d5db); border-radius: 4px; max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            </div>
                             <p style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); margin: 4px 0 0 0;">
                                 <a href="#" onclick="showManualClickUpInput(); return false;" style="color: #6366f1;">Enter link manually instead</a>
                             </p>
@@ -2871,26 +2868,7 @@
 
                 // Store the filtered tasks globally for search functionality
                 window.allClickUpTasks = inProgressTasks;
-
-                // Populate the select dropdown
-                const taskSelect = document.getElementById('clickupTaskSelect');
-                if (taskSelect) {
-                    taskSelect.innerHTML = '<option value="">Select a task...</option>';
-
-                    if (inProgressTasks.length === 0) {
-                        taskSelect.innerHTML += '<option value="" disabled>No in-progress tasks found</option>';
-                    } else {
-                        inProgressTasks.forEach(task => {
-                            const option = document.createElement('option');
-                            option.value = task.url;
-                            option.textContent = `${task.list.name} - ${task.name}`;
-                            option.dataset.taskId = task.id;
-                            option.dataset.taskName = task.name;
-                            option.dataset.listName = task.list.name;
-                            taskSelect.appendChild(option);
-                        });
-                    }
-                }
+                window.selectedClickUpTask = null;
 
                 // Store the filtered tasks
                 clickupTasks = inProgressTasks;
@@ -2898,47 +2876,91 @@
                 console.log('[ClickUp] Tasks loaded and ready');
             } catch (error) {
                 console.error('Error populating ClickUp tasks:', error);
-                const taskSelect = document.getElementById('clickupTaskSelect');
-                if (taskSelect) {
-                    taskSelect.innerHTML = '<option value="">Error loading tasks</option>';
-                }
             }
         }
 
+        // Show ClickUp dropdown
+        function showClickUpDropdown() {
+            const taskList = document.getElementById('clickupTaskList');
+            if (taskList && window.allClickUpTasks) {
+                populateClickUpDropdown();
+                taskList.style.display = 'block';
+            }
+        }
 
-        // Handle ClickUp task selection from dropdown
-        function handleClickUpTaskSelection() {
-            const select = document.getElementById('clickupTaskSelect');
+        // Hide ClickUp dropdown
+        function hideClickUpDropdown() {
+            const taskList = document.getElementById('clickupTaskList');
+            if (taskList) {
+                taskList.style.display = 'none';
+            }
+        }
+
+        // Populate the dropdown with tasks
+        function populateClickUpDropdown(filteredTasks = null) {
+            const taskList = document.getElementById('clickupTaskList');
+            if (!taskList) return;
+
+            const tasks = filteredTasks || window.allClickUpTasks || [];
+
+            taskList.innerHTML = '';
+
+            if (tasks.length === 0) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.style.cssText = 'padding: 12px; color: var(--figma-color-text-secondary, #9ca3af); font-size: 12px;';
+                emptyDiv.textContent = filteredTasks ? 'No tasks match your search' : 'No in-progress tasks found';
+                taskList.appendChild(emptyDiv);
+            } else {
+                tasks.forEach(task => {
+                    const taskDiv = document.createElement('div');
+                    taskDiv.style.cssText = 'padding: 10px 12px; cursor: pointer; font-size: 12px; border-bottom: 1px solid var(--figma-color-border, #e5e7eb);';
+                    taskDiv.textContent = `${task.list.name} - ${task.name}`;
+
+                    taskDiv.onmouseover = function() {
+                        this.style.background = 'var(--figma-color-bg-hover, #f3f4f6)';
+                    };
+                    taskDiv.onmouseout = function() {
+                        this.style.background = '';
+                    };
+                    taskDiv.onclick = function() {
+                        selectClickUpTask(task);
+                    };
+
+                    taskList.appendChild(taskDiv);
+                });
+            }
+        }
+
+        // Select a ClickUp task
+        function selectClickUpTask(task) {
+            const searchInput = document.getElementById('clickupTaskSearch');
             const taskNameInput = document.getElementById('taskName');
 
-            if (!select || !taskNameInput) return;
+            if (!searchInput) return;
 
-            const selectedOption = select.options[select.selectedIndex];
-            const taskUrl = selectedOption.value;
-            let taskName = selectedOption.dataset.taskName;
+            // Set the selected task
+            window.selectedClickUpTask = task;
 
-            // Remove "Design Task - " prefix if present
-            if (taskName) {
-                taskName = taskName.replace(/^Design Task - /i, '');
+            // Display task in search input
+            searchInput.value = `${task.list.name} - ${task.name}`;
+
+            // Auto-fill task name
+            let cleanTaskName = task.name.replace(/^Design Task - /i, '');
+            if (taskNameInput && !taskNameInput.value) {
+                taskNameInput.value = cleanTaskName;
             }
 
-            // Auto-fill task name if it's empty
-            if (taskUrl && taskName && !taskNameInput.value) {
-                taskNameInput.value = taskName;
-            }
+            // Hide the dropdown
+            hideClickUpDropdown();
         }
 
         // Filter ClickUp tasks based on search input
         function filterClickUpTasks() {
             const searchInput = document.getElementById('clickupTaskSearch');
-            const taskSelect = document.getElementById('clickupTaskSelect');
 
-            if (!searchInput || !taskSelect || !window.allClickUpTasks) return;
+            if (!searchInput || !window.allClickUpTasks) return;
 
             const searchTerm = searchInput.value.toLowerCase().trim();
-
-            // Clear current options
-            taskSelect.innerHTML = '<option value="">Select a task...</option>';
 
             // Filter tasks based on search term
             const filteredTasks = window.allClickUpTasks.filter(task => {
@@ -2946,31 +2968,34 @@
                 return taskText.includes(searchTerm);
             });
 
-            // Populate dropdown with filtered tasks
-            if (filteredTasks.length === 0) {
-                taskSelect.innerHTML += '<option value="" disabled>No tasks match your search</option>';
-            } else {
-                filteredTasks.forEach(task => {
-                    const option = document.createElement('option');
-                    option.value = task.url;
-                    option.textContent = `${task.list.name} - ${task.name}`;
-                    option.dataset.taskId = task.id;
-                    option.dataset.taskName = task.name;
-                    option.dataset.listName = task.list.name;
-                    taskSelect.appendChild(option);
-                });
+            // Repopulate dropdown with filtered results
+            populateClickUpDropdown(filteredTasks);
+
+            // Show dropdown if hidden
+            const taskList = document.getElementById('clickupTaskList');
+            if (taskList) {
+                taskList.style.display = 'block';
             }
         }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('clickupTaskDropdownContainer');
+            const taskList = document.getElementById('clickupTaskList');
+
+            if (container && taskList && !container.contains(e.target)) {
+                hideClickUpDropdown();
+            }
+        });
 
         // Helper function to get ClickUp link from either dropdown or manual input
         function getClickUpLink() {
             const dropdownContainer = document.getElementById('clickupTaskDropdownContainer');
-            const select = document.getElementById('clickupTaskSelect');
             const manualInput = document.getElementById('clickupLink');
 
             // Check if dropdown is visible and has a selection
-            if (dropdownContainer && dropdownContainer.style.display !== 'none' && select) {
-                return select.value.trim();
+            if (dropdownContainer && dropdownContainer.style.display !== 'none' && window.selectedClickUpTask) {
+                return window.selectedClickUpTask.url;
             }
 
             // Otherwise use manual input
