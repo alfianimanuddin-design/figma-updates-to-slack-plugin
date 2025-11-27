@@ -2843,14 +2843,22 @@
 
                 console.log(`[ClickUp] Total tasks loaded: ${clickupTasks.length}`);
 
-                // Populate task dropdown
+                // Filter tasks with "in progress" status
+                const inProgressTasks = clickupTasks.filter(task => {
+                    const status = task.status?.toLowerCase() || '';
+                    return status.includes('in progress') || status.includes('in-progress') || status === 'in progress';
+                });
+
+                console.log(`[ClickUp] Tasks with "in progress" status: ${inProgressTasks.length}`);
+
+                // Populate task dropdown with only in-progress tasks
                 taskSelect.innerHTML = '<option value="">Select a task...</option>';
 
-                if (clickupTasks.length === 0) {
-                    console.log('[ClickUp] No tasks found');
-                    taskSelect.innerHTML += '<option value="" disabled>No tasks found</option>';
+                if (inProgressTasks.length === 0) {
+                    console.log('[ClickUp] No in-progress tasks found');
+                    taskSelect.innerHTML += '<option value="" disabled>No in-progress tasks found</option>';
                 } else {
-                    clickupTasks.forEach(task => {
+                    inProgressTasks.forEach(task => {
                         const option = document.createElement('option');
                         option.value = task.url;
                         option.textContent = `${task.list.name} - ${task.name}`;
@@ -2859,6 +2867,9 @@
                         taskSelect.appendChild(option);
                     });
                 }
+
+                // Store the filtered tasks
+                clickupTasks = inProgressTasks;
 
                 taskSelect.disabled = false;
             } catch (error) {
