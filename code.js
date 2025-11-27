@@ -59,5 +59,43 @@ figma.ui.onmessage = async (msg) => {
     } catch (error) {
       figma.ui.postMessage({ type: 'load-slack-token-error', error: error.message });
     }
+  } else if (msg.type === 'save-clickup-token') {
+    try {
+      // If data is null, delete the key
+      if (msg.data === null) {
+        await figma.clientStorage.deleteAsync('clickup-access-token');
+      } else {
+        await figma.clientStorage.setAsync('clickup-access-token', msg.data);
+      }
+      figma.ui.postMessage({ type: 'save-clickup-token-success' });
+    } catch (error) {
+      figma.ui.postMessage({ type: 'save-clickup-token-error', error: error.message });
+    }
+  } else if (msg.type === 'load-clickup-token') {
+    try {
+      const data = await figma.clientStorage.getAsync('clickup-access-token');
+      figma.ui.postMessage({ type: 'load-clickup-token-success', data });
+    } catch (error) {
+      figma.ui.postMessage({ type: 'load-clickup-token-error', error: error.message });
+    }
+  } else if (msg.type === 'save-clickup-user') {
+    try {
+      // If data is null, delete the key
+      if (msg.data === null) {
+        await figma.clientStorage.deleteAsync('clickup-user');
+      } else {
+        await figma.clientStorage.setAsync('clickup-user', msg.data);
+      }
+      figma.ui.postMessage({ type: 'save-clickup-user-success' });
+    } catch (error) {
+      figma.ui.postMessage({ type: 'save-clickup-user-error', error: error.message });
+    }
+  } else if (msg.type === 'load-clickup-user') {
+    try {
+      const data = await figma.clientStorage.getAsync('clickup-user');
+      figma.ui.postMessage({ type: 'load-clickup-user-success', data });
+    } catch (error) {
+      figma.ui.postMessage({ type: 'load-clickup-user-error', error: error.message });
+    }
   }
 };

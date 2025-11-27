@@ -1,8 +1,25 @@
 {
-  "name": "Design Commit",
-  "id": "design-commit-clean",
+  "name": "Figma to Slack Notifier",
+  "id": "1573211816100801813",
   "api": "1.0.0",
   "main": "code.js",
   "ui": "ui.html",
-  "editorType": ["figma"]
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": [
+      "https://figma-slack-bridge.vercel.app",
+      "https://slack.com",
+      "https://api.slack.com",
+      "https://api.clickup.com"
+    ],
+    "reasoning": "Required to communicate with Slack API for sending messages and fetching workspace data, and ClickUp API for task management integration"
+  },
+  "menu": [
+    {
+      "name": "Open Plugin",
+      "command": "open"
+    }
+  ],
+  "documentAccess": "dynamic-page",
+  "capabilities": []
 }
