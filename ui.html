@@ -2911,12 +2911,21 @@
 
                 const data = await response.json();
 
+                console.log('[ClickUp] Tasks API response:', {
+                    status: response.status,
+                    ok: response.ok,
+                    data
+                });
+
                 if (data.success) {
                     return data.tasks || [];
                 }
+
+                // Log error details
+                console.error('[ClickUp] Failed to load tasks:', data);
                 return [];
             } catch (error) {
-                console.error('Error loading ClickUp tasks:', error);
+                console.error('[ClickUp] Error loading tasks:', error);
                 return [];
             }
         }
