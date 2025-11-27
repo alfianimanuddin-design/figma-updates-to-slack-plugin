@@ -202,8 +202,8 @@
 
         .form-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: 1fr;
+            gap: 18px;
             margin-bottom: 18px;
         }
 
@@ -546,7 +546,6 @@
 
         .preview-title {
             color: #b9bbbe;
-            text-transform: uppercase;
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.5px;
@@ -1639,7 +1638,7 @@
             <div class="form-section" style="margin-bottom: 36px;">
                 <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 20px; color: var(--figma-color-text, #1e1e1e);">Project Details</h3>
 
-                <div class="form-group">
+                <div class="form-group" style="display: none;">
                     <label for="taskName">
                         Task Name <span class="required-indicator">*</span>
                     </label>
@@ -1663,9 +1662,6 @@
                                    autocomplete="off">
                             <div id="clickupTaskList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--figma-color-bg, white); border: 1px solid var(--figma-color-border, #d1d5db); border-radius: 4px; max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                             </div>
-                            <p style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); margin: 4px 0 0 0;">
-                                <a href="#" onclick="showManualClickUpInput(); return false;" style="color: #6366f1;">Enter link manually instead</a>
-                            </p>
                         </div>
 
                         <!-- Show manual input if ClickUp is not connected or user chooses manual entry -->
@@ -2352,6 +2348,46 @@
                 console.log('Successfully saved ClickUp user to Figma storage');
             } else if (msg.type === 'save-clickup-user-error') {
                 console.error('Error saving ClickUp user:', msg.error);
+            } else if (msg.type === 'current-page-info') {
+                const figmaLinkInput = document.getElementById('figmaLink');
+                if (figmaLinkInput && msg.pageId) {
+                    // Try to get the file URL from the browser context
+                    let figmaUrl = '';
+
+                    // Try getting from window.location (if accessible)
+                    try {
+                        const currentUrl = window.location.href;
+                        console.log('Window location:', currentUrl);
+
+                        // Extract file key and name from current URL
+                        const urlMatch = currentUrl.match(/figma\.com\/(design|file)\/([^\/]+)\/([^\/\?]+)/);
+                        if (urlMatch) {
+                            const fileKey = urlMatch[2];
+                            const fileName = urlMatch[3];
+                            figmaUrl = `https://www.figma.com/design/${fileKey}/${fileName}?node-id=${msg.pageId}`;
+                        }
+                    } catch (e) {
+                        console.log('Cannot access window.location:', e);
+                    }
+
+                    // Try getting from document.referrer as fallback
+                    if (!figmaUrl && document.referrer) {
+                        console.log('Document referrer:', document.referrer);
+                        const urlMatch = document.referrer.match(/figma\.com\/(design|file)\/([^\/]+)\/([^\/\?]+)/);
+                        if (urlMatch) {
+                            const fileKey = urlMatch[2];
+                            const fileName = urlMatch[3];
+                            figmaUrl = `https://www.figma.com/design/${fileKey}/${fileName}?node-id=${msg.pageId}`;
+                        }
+                    }
+
+                    if (figmaUrl) {
+                        figmaLinkInput.value = figmaUrl;
+                        console.log('Auto-filled Figma link:', figmaUrl);
+                    } else {
+                        console.log('Could not construct Figma URL automatically. Page ID:', msg.pageId);
+                    }
+                }
             }
         };
 
@@ -2885,7 +2921,7 @@
 
             if (!window.allClickUpTasks || window.allClickUpTasks.length === 0) {
                 console.warn('[ClickUp] No tasks available to show');
-                taskList.innerHTML = '<div style="padding: 12px; color: #9ca3af; font-size: 12px;">No tasks loaded. Please refresh.</div>';
+                taskList.innerHTML = '<div style="padding: 12px; color: #9ca3af; font-size: 12px;">Fetching the tasks from ClickUp, please wait...</div>';
                 taskList.style.display = 'block';
                 return;
             }
@@ -2901,6 +2937,86 @@
             if (taskList) {
                 taskList.style.display = 'none';
             }
+        }
+
+        // Update ClickUp task status
+        async function updateClickUpTaskStatus(taskId, status) {
+            if (!clickupAccessToken) {
+                throw new Error('No ClickUp access token available');
+            }
+
+            const endpoint = `${SERVER_URL}/api/clickup-update-status`;
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    accessToken: clickupAccessToken,
+                    taskId: taskId,
+                    status: status
+                })
+            });
+
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to update task status');
+            }
+
+            return result;
+        }
+
+        // Update ClickUp task custom fields
+        async function updateClickUpCustomFields(taskId, figmaLink) {
+            if (!clickupAccessToken) {
+                throw new Error('No ClickUp access token available');
+            }
+
+            // Get current date in YYYY-MM-DD format
+            const currentDate = new Date().toISOString().split('T')[0];
+
+            const customFields = [
+                {
+                    name: 'Delivery Date',
+                    value: currentDate
+                },
+                {
+                    name: 'Copy',
+                    value: 'DONE'
+                },
+                {
+                    name: 'Figma Link',
+                    value: figmaLink
+                },
+                {
+                    name: 'Illustration',
+                    value: 'DONE'
+                }
+            ];
+
+            const endpoint = `${SERVER_URL}/api/clickup-update-custom-fields`;
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    accessToken: clickupAccessToken,
+                    taskId: taskId,
+                    customFields: customFields
+                })
+            });
+
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to update custom fields');
+            }
+
+            return result;
         }
 
         // Populate the dropdown with tasks
@@ -2925,7 +3041,9 @@
                 tasks.forEach((task, index) => {
                     const taskDiv = document.createElement('div');
                     taskDiv.style.cssText = 'padding: 10px 12px; cursor: pointer; font-size: 12px; border-bottom: 1px solid var(--figma-color-border, #e5e7eb);';
-                    taskDiv.textContent = `${task.list.name} - ${task.name}`;
+                    // Remove "Design Task - " prefix from display
+                    const displayName = task.name.replace(/^Design Task - /i, '');
+                    taskDiv.textContent = displayName;
 
                     taskDiv.onmouseover = function() {
                         this.style.background = 'var(--figma-color-bg-hover, #f3f4f6)';
@@ -2954,12 +3072,14 @@
             // Set the selected task
             window.selectedClickUpTask = task;
 
-            // Display task in search input
-            searchInput.value = `${task.list.name} - ${task.name}`;
+            // Remove "Design Task - " prefix from task name
+            const cleanTaskName = task.name.replace(/^Design Task - /i, '');
 
-            // Auto-fill task name
-            let cleanTaskName = task.name.replace(/^Design Task - /i, '');
-            if (taskNameInput && !taskNameInput.value) {
+            // Display task in search input
+            searchInput.value = cleanTaskName;
+
+            // Auto-fill task name (always update when selecting a task)
+            if (taskNameInput) {
                 taskNameInput.value = cleanTaskName;
             }
 
@@ -3827,7 +3947,7 @@
                 feat: 'New feature for',
                 fix: 'Bug fix for',
                 update: 'Update for',
-                final: 'Final design for'
+                final: 'FINAL DESIGN FOR'
             };
 
             let preview = '';
@@ -3871,7 +3991,7 @@
                     ackText += ` cc ${ccUsersText}`;
                 }
             } else {
-                ackText = 'This final design has been acknowledged by: [No acknowledgments yet]';
+                ackText = 'This final design has been acknowledged by [No acknowledgments yet]';
             }
             
             preview += `<div class="preview-ack">${ackText}</div>`;
@@ -4066,7 +4186,7 @@
                     // Add CC if present
                     if (ccUsers.length > 0) {
                         const ccUsersText = ccUsers.map(u => `<@${u}>`).join(' ');
-                        ackText += ` cc: ${ccUsersText}`;
+                        ackText += `, cc ${ccUsersText}`;
                     }
 
                     blocks.push({
@@ -4100,6 +4220,26 @@
                 if (result.success) {
                     // Save acknowledgments for future use
                     saveAcknowledgments();
+
+                    // Update ClickUp task status to "READY FROM DESIGN" if a task is selected
+                    if (window.selectedClickUpTask && clickupAccessToken) {
+                        try {
+                            await updateClickUpTaskStatus(window.selectedClickUpTask.id, 'READY FROM DESIGN');
+                            console.log('ClickUp task status updated to READY FROM DESIGN');
+                        } catch (statusError) {
+                            console.error('Failed to update ClickUp task status:', statusError);
+                            // Don't fail the whole operation if status update fails
+                        }
+
+                        // Update ClickUp custom fields
+                        try {
+                            await updateClickUpCustomFields(window.selectedClickUpTask.id, figmaLink);
+                            console.log('ClickUp custom fields updated successfully');
+                        } catch (customFieldsError) {
+                            console.error('Failed to update ClickUp custom fields:', customFieldsError);
+                            // Don't fail the whole operation if custom fields update fails
+                        }
+                    }
 
                     // Show success with animation
                     showStatus('✅ Notification sent successfully!', 'success');
@@ -4136,13 +4276,35 @@
                 clickupSelect.value = '';
             }
 
+            // Clear ClickUp search input
+            const clickupSearchInput = document.getElementById('clickupTaskSearch');
+            if (clickupSearchInput) {
+                clickupSearchInput.value = '';
+            }
+
+            // Clear selected ClickUp task
+            window.selectedClickUpTask = null;
+
             document.getElementById('figmaLink').value = '';
             document.getElementById('descriptionEditor').textContent = '';
             document.getElementById('slackChannel').value = '';
+
+            // Clear tag arrays
             acknowledgedBy = [];
             ccUsers = [];
             renderAcknowledgedByTags();
             renderCcTags();
+
+            // Clear tag input fields
+            const acknowledgedByInput = document.getElementById('acknowledgedByInput');
+            if (acknowledgedByInput) {
+                acknowledgedByInput.value = '';
+            }
+
+            const ccInput = document.getElementById('ccInput');
+            if (ccInput) {
+                ccInput.value = '';
+            }
 
             // Clear field feedback
             showFieldFeedback('taskName', 'taskNameFeedback', '');

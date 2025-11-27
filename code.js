@@ -1,5 +1,19 @@
 figma.showUI(__html__, { width: 500, height: 800 });
 
+// Send current page info to UI
+// Note: figma.fileKey is not available in plugin sandbox, so we send page ID only
+const currentPage = figma.currentPage;
+const pageId = currentPage.id.replace(/:/g, '-');
+const pageName = currentPage.name;
+
+console.log('Current page:', pageName, 'ID:', pageId);
+
+figma.ui.postMessage({
+  type: 'current-page-info',
+  pageId: pageId,
+  pageName: pageName
+});
+
 // Handle messages from UI
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'save-slack-users') {
