@@ -1656,17 +1656,15 @@
 
                         <!-- Show dropdown if ClickUp is connected -->
                         <div id="clickupTaskDropdownContainer" style="display: none;">
-                            <div style="border: 1px solid var(--figma-color-border, #d1d5db); border-radius: 4px; overflow: hidden;">
+                            <div style="position: relative;">
                                 <input type="text" id="clickupTaskSearch"
-                                       placeholder="Search tasks..."
+                                       placeholder="Select a task..."
+                                       onfocus="showClickUpTaskList()"
                                        oninput="filterClickUpTasks()"
-                                       style="width: 100%; padding: 8px; border: none; border-bottom: 1px solid var(--figma-color-border, #d1d5db); outline: none; font-size: 12px; font-family: inherit; box-sizing: border-box;">
-                                <select id="clickupTaskSelect"
-                                        onchange="handleClickUpTaskSelection()"
-                                        size="10"
-                                        style="width: 100%; border: none; outline: none; font-size: 12px; font-family: inherit; padding: 4px 0; box-sizing: border-box;">
-                                    <option value="">Select a task...</option>
-                                </select>
+                                       autocomplete="off"
+                                       class="input-field">
+                                <div id="clickupTaskList" style="display: none; position: absolute; background: var(--figma-color-bg, white); border: 1px solid var(--figma-color-border, #d1d5db); border-top: none; border-radius: 0 0 4px 4px; max-height: 200px; overflow-y: auto; width: 100%; z-index: 99; box-sizing: border-box;">
+                                </div>
                             </div>
                             <p style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); margin: 4px 0 0 0;">
                                 <a href="#" onclick="showManualClickUpInput(); return false;" style="color: #6366f1;">Enter link manually instead</a>
@@ -2873,69 +2871,75 @@
 
                 // Store the filtered tasks globally for search functionality
                 window.allClickUpTasks = inProgressTasks;
-
-                // Populate task dropdown with only in-progress tasks
-                taskSelect.innerHTML = '<option value="">Select a task...</option>';
-
-                if (inProgressTasks.length === 0) {
-                    console.log('[ClickUp] No in-progress tasks found');
-                    taskSelect.innerHTML += '<option value="" disabled>No in-progress tasks found</option>';
-                } else {
-                    inProgressTasks.forEach(task => {
-                        const option = document.createElement('option');
-                        option.value = task.url;
-                        option.textContent = `${task.list.name} - ${task.name}`;
-                        option.dataset.taskId = task.id;
-                        option.dataset.taskName = task.name;
-                        taskSelect.appendChild(option);
-                    });
-                }
+                window.selectedClickUpTask = null;
 
                 // Store the filtered tasks
                 clickupTasks = inProgressTasks;
 
-                taskSelect.disabled = false;
+                console.log('[ClickUp] Tasks loaded and ready');
             } catch (error) {
                 console.error('Error populating ClickUp tasks:', error);
-                taskSelect.innerHTML = '<option value="">Error loading tasks</option>';
-                taskSelect.disabled = false;
             }
         }
 
+        // Show ClickUp task list dropdown
+        function showClickUpTaskList() {
+            const taskList = document.getElementById('clickupTaskList');
+            if (taskList && window.allClickUpTasks) {
+                filterClickUpTasks();
+                taskList.style.display = 'block';
+            }
+        }
 
-        // Handle ClickUp task selection from dropdown
-        function handleClickUpTaskSelection() {
-            const select = document.getElementById('clickupTaskSelect');
+        // Hide ClickUp task list dropdown
+        function hideClickUpTaskList() {
+            const taskList = document.getElementById('clickupTaskList');
+            if (taskList) {
+                taskList.style.display = 'none';
+            }
+        }
+
+        // Select a ClickUp task
+        function selectClickUpTask(task) {
+            const searchInput = document.getElementById('clickupTaskSearch');
             const taskNameInput = document.getElementById('taskName');
+            const clickupLinkInput = document.getElementById('clickupLink');
 
-            if (!select || !taskNameInput) return;
+            if (!searchInput) return;
 
-            const selectedOption = select.options[select.selectedIndex];
-            const taskUrl = selectedOption.value;
-            let taskName = selectedOption.dataset.taskName;
+            // Set the selected task
+            window.selectedClickUpTask = task;
 
-            // Remove "Design Task - " prefix if present
-            if (taskName) {
-                taskName = taskName.replace(/^Design Task - /i, '');
+            // Display task name in search input
+            searchInput.value = `${task.list.name} - ${task.name}`;
+
+            // Auto-fill task name and link
+            let cleanTaskName = task.name.replace(/^Design Task - /i, '');
+            if (taskNameInput && !taskNameInput.value) {
+                taskNameInput.value = cleanTaskName;
             }
 
-            // Auto-fill task name if it's empty
-            if (taskUrl && taskName && !taskNameInput.value) {
-                taskNameInput.value = taskName;
+            // Set the ClickUp link for form submission
+            if (clickupLinkInput) {
+                clickupLinkInput.value = task.url;
             }
+
+            // Hide the dropdown
+            hideClickUpTaskList();
         }
+
 
         // Filter ClickUp tasks based on search input
         function filterClickUpTasks() {
             const searchInput = document.getElementById('clickupTaskSearch');
-            const taskSelect = document.getElementById('clickupTaskSelect');
+            const taskList = document.getElementById('clickupTaskList');
 
-            if (!searchInput || !taskSelect || !window.allClickUpTasks) return;
+            if (!searchInput || !taskList || !window.allClickUpTasks) return;
 
             const searchTerm = searchInput.value.toLowerCase().trim();
 
-            // Clear current options
-            taskSelect.innerHTML = '<option value="">Select a task...</option>';
+            // Clear current list
+            taskList.innerHTML = '';
 
             // Filter tasks based on search term
             const filteredTasks = window.allClickUpTasks.filter(task => {
@@ -2945,28 +2949,53 @@
 
             // Populate dropdown with filtered tasks
             if (filteredTasks.length === 0) {
-                taskSelect.innerHTML += '<option value="" disabled>No tasks match your search</option>';
+                const emptyDiv = document.createElement('div');
+                emptyDiv.style.cssText = 'padding: 8px; color: var(--figma-color-text-secondary, #6b7280); font-size: 12px;';
+                emptyDiv.textContent = 'No tasks match your search';
+                taskList.appendChild(emptyDiv);
             } else {
                 filteredTasks.forEach(task => {
-                    const option = document.createElement('option');
-                    option.value = task.url;
-                    option.textContent = `${task.list.name} - ${task.name}`;
-                    option.dataset.taskId = task.id;
-                    option.dataset.taskName = task.name;
-                    taskSelect.appendChild(option);
+                    const taskDiv = document.createElement('div');
+                    taskDiv.style.cssText = 'padding: 8px; cursor: pointer; font-size: 12px; border-bottom: 1px solid var(--figma-color-border-light, #f3f4f6);';
+                    taskDiv.textContent = `${task.list.name} - ${task.name}`;
+                    taskDiv.onmouseover = function() {
+                        this.style.background = 'var(--figma-color-bg-hover, #f3f4f6)';
+                    };
+                    taskDiv.onmouseout = function() {
+                        this.style.background = '';
+                    };
+                    taskDiv.onclick = function() {
+                        selectClickUpTask(task);
+                    };
+                    taskList.appendChild(taskDiv);
                 });
             }
+
+            // Show the dropdown
+            taskList.style.display = 'block';
         }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('clickupTaskDropdownContainer');
+            const searchInput = document.getElementById('clickupTaskSearch');
+            const taskList = document.getElementById('clickupTaskList');
+
+            if (dropdown && searchInput && taskList) {
+                if (!dropdown.contains(e.target)) {
+                    hideClickUpTaskList();
+                }
+            }
+        });
 
         // Helper function to get ClickUp link from either dropdown or manual input
         function getClickUpLink() {
             const dropdownContainer = document.getElementById('clickupTaskDropdownContainer');
-            const select = document.getElementById('clickupTaskSelect');
             const manualInput = document.getElementById('clickupLink');
 
             // Check if dropdown is visible and has a selection
-            if (dropdownContainer && dropdownContainer.style.display !== 'none' && select) {
-                return select.value.trim();
+            if (dropdownContainer && dropdownContainer.style.display !== 'none' && window.selectedClickUpTask) {
+                return window.selectedClickUpTask.url;
             }
 
             // Otherwise use manual input
