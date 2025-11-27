@@ -2699,14 +2699,19 @@
         }
 
         // Update the ClickUp task input based on connection status
-        function updateClickUpTaskInput(isConnected) {
+        async function updateClickUpTaskInput(isConnected) {
             const dropdownContainer = document.getElementById('clickupTaskDropdownContainer');
             const inputContainer = document.getElementById('clickupLinkInputContainer');
             const connectPrompt = document.getElementById('clickupConnectPrompt');
 
             if (isConnected && clickupAccessToken) {
-                // Show option to use dropdown
-                connectPrompt.style.display = 'block';
+                // Automatically show dropdown when connected
+                if (dropdownContainer) dropdownContainer.style.display = 'block';
+                if (inputContainer) inputContainer.style.display = 'none';
+                if (connectPrompt) connectPrompt.style.display = 'none';
+
+                // Load tasks automatically
+                await populateClickUpTasks();
             } else {
                 // Show manual input by default
                 if (dropdownContainer) dropdownContainer.style.display = 'none';
