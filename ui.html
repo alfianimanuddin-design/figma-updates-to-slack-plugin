@@ -2831,13 +2831,16 @@
                 selectedSpaceId = designSpace.id;
                 console.log('[ClickUp] Using space:', designSpace.name, designSpace.id);
 
-                // Fetch lists for the space
-                const response = await fetch(`https://api.clickup.com/api/v2/space/${selectedSpaceId}/list?archived=false`, {
-                    method: 'GET',
+                // Fetch lists for the space via backend
+                const response = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-lists', {
+                    method: 'POST',
                     headers: {
-                        'Authorization': clickupAccessToken,
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify({
+                        accessToken: clickupAccessToken,
+                        spaceId: selectedSpaceId
+                    })
                 });
 
                 const data = await response.json();
