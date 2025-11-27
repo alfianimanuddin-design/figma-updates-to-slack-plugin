@@ -2789,12 +2789,12 @@
             }
         }
 
-        // Hardcoded workspace, space, and list IDs for Design Team
+        // Hardcoded workspace, space, and folder IDs for Design Team
         const CLICKUP_WORKSPACE_ID = '3688330'; // Flip workspace
         const CLICKUP_SPACE_ID = '3872753'; // Design Team space
-        const CLICKUP_LIST_ID = '5-103653339-1'; // Specific list from https://app.clickup.com/3688330/v/l/5-103653339-1?pr=3872753
+        const CLICKUP_FOLDER_IDS = ['103653339', '103653376']; // Consumer Solutions and Business Solutions folders
 
-        // Populate ClickUp tasks dropdown (from hardcoded list)
+        // Populate ClickUp tasks dropdown (from Consumer Solutions and Business Solutions folders)
         async function populateClickUpTasks() {
             const taskSelect = document.getElementById('clickupTaskSelect');
             if (!taskSelect) return;
@@ -2804,64 +2804,56 @@
             taskSelect.disabled = true;
 
             try {
-                // Fetch folders from Design Team space
-                console.log('[ClickUp] Fetching folders from Design Team space:', CLICKUP_SPACE_ID);
-                const foldersResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-folders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        accessToken: clickupAccessToken,
-                        spaceId: CLICKUP_SPACE_ID
-                    })
-                });
-                const foldersData = await foldersResponse.json();
-                console.log('[ClickUp] Folders in Design Team:', foldersData);
+                console.log('[ClickUp] Fetching tasks from folders:', CLICKUP_FOLDER_IDS);
 
-                // Fetch lists from each folder
-                if (foldersData.success && foldersData.folders && foldersData.folders.length > 0) {
-                    console.log('[ClickUp] Found', foldersData.folders.length, 'folders. Fetching lists from each...');
+                // Collect all lists from the 2 folders
+                const allLists = [];
 
-                    for (const folder of foldersData.folders) {
-                        console.log(`[ClickUp] Folder: "${folder.name}" (ID: ${folder.id})`);
+                for (const folderId of CLICKUP_FOLDER_IDS) {
+                    const listsResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-folder-lists', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            accessToken: clickupAccessToken,
+                            folderId: folderId
+                        })
+                    });
+                    const listsData = await listsResponse.json();
 
-                        const listsResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-folder-lists', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                accessToken: clickupAccessToken,
-                                folderId: folder.id
-                            })
-                        });
-                        const listsData = await listsResponse.json();
-
-                        if (listsData.success && listsData.lists && listsData.lists.length > 0) {
-                            console.log(`  └─ ${listsData.lists.length} lists:`);
-                            listsData.lists.forEach(list => {
-                                console.log(`     - "${list.name}" (ID: ${list.id})`);
-                            });
-                        } else {
-                            console.log(`  └─ No lists in this folder`);
-                        }
+                    if (listsData.success && listsData.lists) {
+                        console.log(`[ClickUp] Folder ${folderId}: Found ${listsData.lists.length} lists`);
+                        allLists.push(...listsData.lists);
                     }
                 }
 
-                console.log('[ClickUp] Attempting to load tasks from hardcoded list:', CLICKUP_LIST_ID);
+                console.log(`[ClickUp] Total lists found: ${allLists.length}`);
 
-                // Load tasks from the hardcoded list
-                clickupTasks = await loadClickUpTasks(CLICKUP_WORKSPACE_ID, null, CLICKUP_LIST_ID);
+                // Fetch tasks from all lists
+                clickupTasks = [];
+
+                for (const list of allLists) {
+                    console.log(`[ClickUp] Loading tasks from list: ${list.name} (ID: ${list.id})`);
+                    const tasks = await loadClickUpTasks(CLICKUP_WORKSPACE_ID, null, list.id);
+
+                    if (tasks && tasks.length > 0) {
+                        console.log(`  └─ Found ${tasks.length} tasks`);
+                        clickupTasks.push(...tasks);
+                    }
+                }
+
+                console.log(`[ClickUp] Total tasks loaded: ${clickupTasks.length}`);
 
                 // Populate task dropdown
                 taskSelect.innerHTML = '<option value="">Select a task...</option>';
 
                 if (clickupTasks.length === 0) {
-                    console.log('[ClickUp] No tasks found in list');
+                    console.log('[ClickUp] No tasks found');
                     taskSelect.innerHTML += '<option value="" disabled>No tasks found</option>';
                 } else {
-                    console.log('[ClickUp] Found', clickupTasks.length, 'tasks');
                     clickupTasks.forEach(task => {
                         const option = document.createElement('option');
                         option.value = task.url;
-                        option.textContent = task.name;
+                        option.textContent = `${task.list.name} - ${task.name}`;
                         option.dataset.taskId = task.id;
                         option.dataset.taskName = task.name;
                         taskSelect.appendChild(option);
