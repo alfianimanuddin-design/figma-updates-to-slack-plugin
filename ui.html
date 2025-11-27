@@ -2804,46 +2804,44 @@
             taskSelect.disabled = true;
 
             try {
-                // Search for spaces that contain lists
-                console.log('[ClickUp] Fetching available spaces for team:', CLICKUP_WORKSPACE_ID);
-                const spacesResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-spaces', {
+                // Fetch folders from Design Team space
+                console.log('[ClickUp] Fetching folders from Design Team space:', CLICKUP_SPACE_ID);
+                const foldersResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-folders', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         accessToken: clickupAccessToken,
-                        teamId: CLICKUP_WORKSPACE_ID
+                        spaceId: CLICKUP_SPACE_ID
                     })
                 });
-                const spacesData = await spacesResponse.json();
-                console.log('[ClickUp] Total spaces:', spacesData.spaces?.length);
+                const foldersData = await foldersResponse.json();
+                console.log('[ClickUp] Folders in Design Team:', foldersData);
 
-                // Search through spaces to find lists
-                if (spacesData.success && spacesData.spaces) {
-                    console.log('[ClickUp] Searching for spaces with lists...');
-                    let foundLists = false;
+                // Fetch lists from each folder
+                if (foldersData.success && foldersData.folders && foldersData.folders.length > 0) {
+                    console.log('[ClickUp] Found', foldersData.folders.length, 'folders. Fetching lists from each...');
 
-                    for (const space of spacesData.spaces) {
-                        const listsResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-lists', {
+                    for (const folder of foldersData.folders) {
+                        console.log(`[ClickUp] Folder: "${folder.name}" (ID: ${folder.id})`);
+
+                        const listsResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-folder-lists', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 accessToken: clickupAccessToken,
-                                spaceId: space.id
+                                folderId: folder.id
                             })
                         });
                         const listsData = await listsResponse.json();
 
                         if (listsData.success && listsData.lists && listsData.lists.length > 0) {
-                            console.log(`[ClickUp] ✓ Space "${space.name}" (ID: ${space.id}) has ${listsData.lists.length} lists:`);
+                            console.log(`  └─ ${listsData.lists.length} lists:`);
                             listsData.lists.forEach(list => {
-                                console.log(`    - "${list.name}" (ID: ${list.id})`);
+                                console.log(`     - "${list.name}" (ID: ${list.id})`);
                             });
-                            foundLists = true;
+                        } else {
+                            console.log(`  └─ No lists in this folder`);
                         }
-                    }
-
-                    if (!foundLists) {
-                        console.log('[ClickUp] No lists found in any space. Lists might be in folders.');
                     }
                 }
 
