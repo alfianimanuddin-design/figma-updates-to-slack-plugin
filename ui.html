@@ -2912,7 +2912,12 @@
 
             const selectedOption = select.options[select.selectedIndex];
             const taskUrl = selectedOption.value;
-            const taskName = selectedOption.dataset.taskName;
+            let taskName = selectedOption.dataset.taskName;
+
+            // Remove "Design Task - " prefix if present
+            if (taskName) {
+                taskName = taskName.replace(/^Design Task - /i, '');
+            }
 
             // Auto-fill task name if it's empty
             if (taskUrl && taskName && !taskNameInput.value) {
