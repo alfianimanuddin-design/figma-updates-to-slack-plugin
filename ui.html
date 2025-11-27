@@ -2881,11 +2881,25 @@
 
         // Show ClickUp dropdown
         function showClickUpDropdown() {
+            console.log('[ClickUp] showClickUpDropdown called');
+            console.log('[ClickUp] Available tasks:', window.allClickUpTasks?.length || 0);
+
             const taskList = document.getElementById('clickupTaskList');
-            if (taskList && window.allClickUpTasks) {
-                populateClickUpDropdown();
-                taskList.style.display = 'block';
+            if (!taskList) {
+                console.error('[ClickUp] Task list element not found');
+                return;
             }
+
+            if (!window.allClickUpTasks || window.allClickUpTasks.length === 0) {
+                console.warn('[ClickUp] No tasks available to show');
+                taskList.innerHTML = '<div style="padding: 12px; color: #9ca3af; font-size: 12px;">No tasks loaded. Please refresh.</div>';
+                taskList.style.display = 'block';
+                return;
+            }
+
+            populateClickUpDropdown();
+            taskList.style.display = 'block';
+            console.log('[ClickUp] Dropdown shown with', taskList.children.length, 'items');
         }
 
         // Hide ClickUp dropdown
@@ -2899,19 +2913,23 @@
         // Populate the dropdown with tasks
         function populateClickUpDropdown(filteredTasks = null) {
             const taskList = document.getElementById('clickupTaskList');
-            if (!taskList) return;
+            if (!taskList) {
+                console.error('[ClickUp] populateClickUpDropdown: taskList not found');
+                return;
+            }
 
             const tasks = filteredTasks || window.allClickUpTasks || [];
+            console.log('[ClickUp] Populating dropdown with', tasks.length, 'tasks');
 
             taskList.innerHTML = '';
 
             if (tasks.length === 0) {
                 const emptyDiv = document.createElement('div');
                 emptyDiv.style.cssText = 'padding: 12px; color: var(--figma-color-text-secondary, #9ca3af); font-size: 12px;';
-                emptyDiv.textContent = filteredTasks ? 'No tasks match your search' : 'No in-progress tasks found';
+                emptyDiv.textContent = filteredTasks !== null ? 'No tasks match your search' : 'No in-progress tasks found';
                 taskList.appendChild(emptyDiv);
             } else {
-                tasks.forEach(task => {
+                tasks.forEach((task, index) => {
                     const taskDiv = document.createElement('div');
                     taskDiv.style.cssText = 'padding: 10px 12px; cursor: pointer; font-size: 12px; border-bottom: 1px solid var(--figma-color-border, #e5e7eb);';
                     taskDiv.textContent = `${task.list.name} - ${task.name}`;
@@ -2928,6 +2946,8 @@
 
                     taskList.appendChild(taskDiv);
                 });
+
+                console.log('[ClickUp] Added', taskList.children.length, 'task items to dropdown');
             }
         }
 
