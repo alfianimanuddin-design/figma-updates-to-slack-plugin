@@ -2804,7 +2804,37 @@
             taskSelect.disabled = true;
 
             try {
-                console.log('[ClickUp] Loading tasks from hardcoded list:', CLICKUP_LIST_ID);
+                // First, fetch all available spaces to find the correct IDs
+                console.log('[ClickUp] Fetching available spaces for team:', CLICKUP_WORKSPACE_ID);
+                const spacesResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-spaces', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        accessToken: clickupAccessToken,
+                        teamId: CLICKUP_WORKSPACE_ID
+                    })
+                });
+                const spacesData = await spacesResponse.json();
+                console.log('[ClickUp] Available spaces:', spacesData);
+
+                // Fetch lists from each space
+                if (spacesData.success && spacesData.spaces) {
+                    for (const space of spacesData.spaces) {
+                        console.log(`[ClickUp] Fetching lists from space: ${space.name} (ID: ${space.id})`);
+                        const listsResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-lists', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                accessToken: clickupAccessToken,
+                                spaceId: space.id
+                            })
+                        });
+                        const listsData = await listsResponse.json();
+                        console.log(`[ClickUp] Lists in ${space.name}:`, listsData);
+                    }
+                }
+
+                console.log('[ClickUp] Attempting to load tasks from hardcoded list:', CLICKUP_LIST_ID);
 
                 // Load tasks from the hardcoded list
                 clickupTasks = await loadClickUpTasks(CLICKUP_WORKSPACE_ID, null, CLICKUP_LIST_ID);
