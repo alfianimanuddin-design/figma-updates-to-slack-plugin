@@ -2804,7 +2804,7 @@
             taskSelect.disabled = true;
 
             try {
-                // First, fetch all available spaces to find the correct IDs
+                // Search for spaces that contain lists
                 console.log('[ClickUp] Fetching available spaces for team:', CLICKUP_WORKSPACE_ID);
                 const spacesResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-spaces', {
                     method: 'POST',
@@ -2815,12 +2815,14 @@
                     })
                 });
                 const spacesData = await spacesResponse.json();
-                console.log('[ClickUp] Available spaces:', spacesData);
+                console.log('[ClickUp] Total spaces:', spacesData.spaces?.length);
 
-                // Fetch lists from each space
+                // Search through spaces to find lists
                 if (spacesData.success && spacesData.spaces) {
+                    console.log('[ClickUp] Searching for spaces with lists...');
+                    let foundLists = false;
+
                     for (const space of spacesData.spaces) {
-                        console.log(`[ClickUp] Fetching lists from space: ${space.name} (ID: ${space.id})`);
                         const listsResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-lists', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -2830,7 +2832,18 @@
                             })
                         });
                         const listsData = await listsResponse.json();
-                        console.log(`[ClickUp] Lists in ${space.name}:`, listsData);
+
+                        if (listsData.success && listsData.lists && listsData.lists.length > 0) {
+                            console.log(`[ClickUp] ✓ Space "${space.name}" (ID: ${space.id}) has ${listsData.lists.length} lists:`);
+                            listsData.lists.forEach(list => {
+                                console.log(`    - "${list.name}" (ID: ${list.id})`);
+                            });
+                            foundLists = true;
+                        }
+                    }
+
+                    if (!foundLists) {
+                        console.log('[ClickUp] No lists found in any space. Lists might be in folders.');
                     }
                 }
 
