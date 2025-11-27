@@ -1656,8 +1656,11 @@
 
                         <!-- Show dropdown if ClickUp is connected -->
                         <div id="clickupTaskDropdownContainer" style="display: none;">
-                            <select id="clickupTaskSelect" class="input-field">
-                                <option value="">Select a ClickUp task...</option>
+                            <select id="clickupWorkspaceSelect" class="input-field" onchange="onWorkspaceChange()" style="margin-bottom: 8px;">
+                                <option value="">Select a workspace...</option>
+                            </select>
+                            <select id="clickupTaskSelect" class="input-field" disabled>
+                                <option value="">Select a workspace first...</option>
                             </select>
                             <p style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); margin: 4px 0 0 0;">
                                 <a href="#" onclick="showManualClickUpInput(); return false;" style="color: #6366f1;">Enter link manually instead</a>
@@ -2753,36 +2756,72 @@
             }
         }
 
-        // Populate ClickUp tasks dropdown
+        // Populate ClickUp workspaces dropdown
         async function populateClickUpTasks() {
-            const select = document.getElementById('clickupTaskSelect');
+            const workspaceSelect = document.getElementById('clickupWorkspaceSelect');
+            const taskSelect = document.getElementById('clickupTaskSelect');
 
-            if (!select) return;
+            if (!workspaceSelect || !taskSelect) return;
 
             // Show loading state
-            select.innerHTML = '<option value="">Loading tasks...</option>';
-            select.disabled = true;
+            workspaceSelect.innerHTML = '<option value="">Loading workspaces...</option>';
+            workspaceSelect.disabled = true;
 
             try {
-                // Load tasks from the first workspace
+                // Load workspaces
                 if (clickupWorkspaces.length === 0) {
                     await loadClickUpWorkspaces();
                 }
 
                 if (clickupWorkspaces.length === 0) {
-                    select.innerHTML = '<option value="">No workspaces found</option>';
+                    workspaceSelect.innerHTML = '<option value="">No workspaces found</option>';
                     return;
                 }
 
-                // Get tasks from the first workspace
-                const firstWorkspace = clickupWorkspaces[0];
-                clickupTasks = await loadClickUpTasks(firstWorkspace.id);
+                // Populate workspace dropdown
+                workspaceSelect.innerHTML = '<option value="">Select a workspace...</option>';
+                clickupWorkspaces.forEach(workspace => {
+                    const option = document.createElement('option');
+                    option.value = workspace.id;
+                    option.textContent = workspace.name;
+                    workspaceSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error populating ClickUp workspaces:', error);
+                workspaceSelect.innerHTML = '<option value="">Error loading workspaces</option>';
+            } finally {
+                workspaceSelect.disabled = false;
+            }
+        }
 
-                // Populate dropdown
-                select.innerHTML = '<option value="">Select a ClickUp task...</option>';
+        // Handle workspace selection change
+        async function onWorkspaceChange() {
+            const workspaceSelect = document.getElementById('clickupWorkspaceSelect');
+            const taskSelect = document.getElementById('clickupTaskSelect');
+
+            if (!workspaceSelect || !taskSelect) return;
+
+            const workspaceId = workspaceSelect.value;
+
+            if (!workspaceId) {
+                taskSelect.innerHTML = '<option value="">Select a workspace first...</option>';
+                taskSelect.disabled = true;
+                return;
+            }
+
+            // Show loading state
+            taskSelect.innerHTML = '<option value="">Loading tasks...</option>';
+            taskSelect.disabled = true;
+
+            try {
+                // Load tasks from selected workspace
+                clickupTasks = await loadClickUpTasks(workspaceId);
+
+                // Populate task dropdown
+                taskSelect.innerHTML = '<option value="">Select a ClickUp task...</option>';
 
                 if (clickupTasks.length === 0) {
-                    select.innerHTML += '<option value="" disabled>No tasks found in workspace</option>';
+                    taskSelect.innerHTML += '<option value="" disabled>No tasks found in this workspace</option>';
                 } else {
                     clickupTasks.forEach(task => {
                         const option = document.createElement('option');
@@ -2790,14 +2829,15 @@
                         option.textContent = `${task.name} (${task.list.name})`;
                         option.dataset.taskId = task.id;
                         option.dataset.taskName = task.name;
-                        select.appendChild(option);
+                        taskSelect.appendChild(option);
                     });
                 }
+
+                taskSelect.disabled = false;
             } catch (error) {
-                console.error('Error populating ClickUp tasks:', error);
-                select.innerHTML = '<option value="">Error loading tasks</option>';
-            } finally {
-                select.disabled = false;
+                console.error('Error loading tasks:', error);
+                taskSelect.innerHTML = '<option value="">Error loading tasks</option>';
+                taskSelect.disabled = false;
             }
         }
 
