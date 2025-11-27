@@ -2628,13 +2628,22 @@
                 // Open OAuth window
                 const authWindow = window.open(data.authUrl, 'ClickUp Authorization', 'width=600,height=700');
 
+                if (!authWindow) {
+                    throw new Error('Failed to open authorization window. Please allow popups.');
+                }
+
                 // Listen for the OAuth callback
-                window.addEventListener('message', async function handleOAuthCallback(event) {
+                const messageHandler = async function handleOAuthCallback(event) {
+                    console.log('[ClickUp] Received window message:', event.data);
+
                     if (event.data.type === 'clickup-auth-success') {
-                        window.removeEventListener('message', handleOAuthCallback);
+                        console.log('[ClickUp] Auth success message received!');
+                        window.removeEventListener('message', messageHandler);
 
                         clickupAccessToken = event.data.data.access_token;
                         clickupUser = event.data.data.user;
+
+                        console.log('[ClickUp] Saving token to Figma storage...');
 
                         // Save to Figma storage
                         parent.postMessage({
@@ -2651,13 +2660,40 @@
                             }
                         }, '*');
 
+                        console.log('[ClickUp] Updating UI...');
                         updateClickUpUI(true);
                         await loadClickUpWorkspaces();
 
                         statusEl.innerHTML = '<p style="color: #059669; font-size: 11px; margin: 8px 0;">✓ Successfully connected to ClickUp!</p>';
                         setTimeout(() => { statusEl.innerHTML = ''; }, 3000);
                     }
-                });
+                };
+
+                window.addEventListener('message', messageHandler);
+
+                // Fallback: Poll for window close and reload token
+                const pollInterval = setInterval(async () => {
+                    if (authWindow.closed) {
+                        console.log('[ClickUp] Auth window closed, reloading token...');
+                        clearInterval(pollInterval);
+                        window.removeEventListener('message', messageHandler);
+
+                        // Reload token from storage
+                        await loadClickUpAuth();
+
+                        // Check if we got a token
+                        setTimeout(() => {
+                            if (clickupAccessToken) {
+                                console.log('[ClickUp] Token loaded successfully!');
+                                statusEl.innerHTML = '<p style="color: #059669; font-size: 11px; margin: 8px 0;">✓ Successfully connected to ClickUp!</p>';
+                                setTimeout(() => { statusEl.innerHTML = ''; }, 3000);
+                            } else {
+                                console.log('[ClickUp] No token found after auth');
+                                statusEl.innerHTML = '<p style="color: #dc2626; font-size: 11px; margin: 8px 0;">✗ Authorization completed but token not saved. Please try again.</p>';
+                            }
+                        }, 500);
+                    }
+                }, 500);
 
             } catch (error) {
                 console.error('ClickUp auth error:', error);
