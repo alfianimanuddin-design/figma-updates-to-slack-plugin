@@ -2806,6 +2806,21 @@
             listSelect.disabled = true;
 
             try {
+                // First, fetch available spaces to debug
+                console.log('[ClickUp] Fetching available spaces for team:', CLICKUP_WORKSPACE_ID);
+                const spacesResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-spaces', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        accessToken: clickupAccessToken,
+                        teamId: CLICKUP_WORKSPACE_ID
+                    })
+                });
+                const spacesData = await spacesResponse.json();
+                console.log('[ClickUp] Available spaces:', spacesData);
+
                 console.log('[ClickUp] Using hardcoded space ID:', CLICKUP_SPACE_ID);
 
                 // Fetch lists for the space via backend
