@@ -2821,11 +2821,13 @@
                 });
 
                 const data = await response.json();
+                console.log('[ClickUp] Lists API response:', response.status, data);
 
                 // Populate list dropdown
                 listSelect.innerHTML = '<option value="">Select a list...</option>';
 
-                if (data.lists && data.lists.length > 0) {
+                if (data.success && data.lists && data.lists.length > 0) {
+                    console.log('[ClickUp] Found', data.lists.length, 'lists');
                     data.lists.forEach(list => {
                         const option = document.createElement('option');
                         option.value = list.id;
@@ -2834,7 +2836,12 @@
                     });
                     listSelect.disabled = false;
                 } else {
-                    listSelect.innerHTML = '<option value="">No lists found</option>';
+                    console.error('[ClickUp] No lists found. Response:', data);
+                    if (data.error) {
+                        listSelect.innerHTML = `<option value="">Error: ${data.error}</option>`;
+                    } else {
+                        listSelect.innerHTML = '<option value="">No lists found</option>';
+                    }
                 }
             } catch (error) {
                 console.error('Error populating ClickUp lists:', error);
