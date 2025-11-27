@@ -1656,11 +1656,8 @@
 
                         <!-- Show dropdown if ClickUp is connected -->
                         <div id="clickupTaskDropdownContainer" style="display: none;">
-                            <select id="clickupListSelect" class="input-field" onchange="onListChange()" style="margin-bottom: 8px;">
-                                <option value="">Select a list...</option>
-                            </select>
-                            <select id="clickupTaskSelect" class="input-field" disabled>
-                                <option value="">Select a list first...</option>
+                            <select id="clickupTaskSelect" class="input-field" onchange="handleClickUpTaskSelection()">
+                                <option value="">Select a task...</option>
                             </select>
                             <p style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); margin: 4px 0 0 0;">
                                 <a href="#" onclick="showManualClickUpInput(); return false;" style="color: #6366f1;">Enter link manually instead</a>
@@ -2792,109 +2789,34 @@
             }
         }
 
-        // Hardcoded workspace and space IDs for Design Team
+        // Hardcoded workspace, space, and list IDs for Design Team
         const CLICKUP_WORKSPACE_ID = '3688330'; // Flip workspace
         const CLICKUP_SPACE_ID = '3872753'; // Design Team space
+        const CLICKUP_LIST_ID = '5-103653339-1'; // Specific list from https://app.clickup.com/3688330/v/l/5-103653339-1?pr=3872753
 
-        // Populate ClickUp lists dropdown (from hardcoded Design Team space)
+        // Populate ClickUp tasks dropdown (from hardcoded list)
         async function populateClickUpTasks() {
-            const listSelect = document.getElementById('clickupListSelect');
-            if (!listSelect) return;
-
-            // Show loading state
-            listSelect.innerHTML = '<option value="">Loading lists...</option>';
-            listSelect.disabled = true;
-
-            try {
-                // First, fetch available spaces to debug
-                console.log('[ClickUp] Fetching available spaces for team:', CLICKUP_WORKSPACE_ID);
-                const spacesResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-spaces', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        accessToken: clickupAccessToken,
-                        teamId: CLICKUP_WORKSPACE_ID
-                    })
-                });
-                const spacesData = await spacesResponse.json();
-                console.log('[ClickUp] Available spaces:', spacesData);
-
-                console.log('[ClickUp] Using hardcoded space ID:', CLICKUP_SPACE_ID);
-
-                // Fetch lists for the space via backend
-                const response = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-lists', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        accessToken: clickupAccessToken,
-                        spaceId: CLICKUP_SPACE_ID
-                    })
-                });
-
-                const data = await response.json();
-                console.log('[ClickUp] Lists API response:', response.status, data);
-
-                // Populate list dropdown
-                listSelect.innerHTML = '<option value="">Select a list...</option>';
-
-                if (data.success && data.lists && data.lists.length > 0) {
-                    console.log('[ClickUp] Found', data.lists.length, 'lists');
-                    data.lists.forEach(list => {
-                        const option = document.createElement('option');
-                        option.value = list.id;
-                        option.textContent = list.name;
-                        listSelect.appendChild(option);
-                    });
-                    listSelect.disabled = false;
-                } else {
-                    console.error('[ClickUp] No lists found. Response:', data);
-                    if (data.error) {
-                        listSelect.innerHTML = `<option value="">Error: ${data.error}</option>`;
-                    } else {
-                        listSelect.innerHTML = '<option value="">No lists found</option>';
-                    }
-                }
-            } catch (error) {
-                console.error('Error populating ClickUp lists:', error);
-                listSelect.innerHTML = '<option value="">Error loading lists</option>';
-            } finally {
-                listSelect.disabled = false;
-            }
-        }
-
-        // Handle list selection change - load tasks
-        async function onListChange() {
-            const listSelect = document.getElementById('clickupListSelect');
             const taskSelect = document.getElementById('clickupTaskSelect');
-
-            if (!listSelect || !taskSelect) return;
-
-            const listId = listSelect.value;
-
-            if (!listId) {
-                taskSelect.innerHTML = '<option value="">Select a list first...</option>';
-                taskSelect.disabled = true;
-                return;
-            }
+            if (!taskSelect) return;
 
             // Show loading state
             taskSelect.innerHTML = '<option value="">Loading tasks...</option>';
             taskSelect.disabled = true;
 
             try {
-                // Load tasks from selected list
-                clickupTasks = await loadClickUpTasks(CLICKUP_WORKSPACE_ID, null, listId);
+                console.log('[ClickUp] Loading tasks from hardcoded list:', CLICKUP_LIST_ID);
+
+                // Load tasks from the hardcoded list
+                clickupTasks = await loadClickUpTasks(CLICKUP_WORKSPACE_ID, null, CLICKUP_LIST_ID);
 
                 // Populate task dropdown
                 taskSelect.innerHTML = '<option value="">Select a task...</option>';
 
                 if (clickupTasks.length === 0) {
-                    taskSelect.innerHTML += '<option value="" disabled>No tasks found in this list</option>';
+                    console.log('[ClickUp] No tasks found in list');
+                    taskSelect.innerHTML += '<option value="" disabled>No tasks found</option>';
                 } else {
+                    console.log('[ClickUp] Found', clickupTasks.length, 'tasks');
                     clickupTasks.forEach(task => {
                         const option = document.createElement('option');
                         option.value = task.url;
@@ -2907,11 +2829,12 @@
 
                 taskSelect.disabled = false;
             } catch (error) {
-                console.error('Error loading tasks:', error);
+                console.error('Error populating ClickUp tasks:', error);
                 taskSelect.innerHTML = '<option value="">Error loading tasks</option>';
                 taskSelect.disabled = false;
             }
         }
+
 
         // Handle ClickUp task selection from dropdown
         function handleClickUpTaskSelection() {
