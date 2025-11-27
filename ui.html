@@ -1656,7 +1656,11 @@
 
                         <!-- Show dropdown if ClickUp is connected -->
                         <div id="clickupTaskDropdownContainer" style="display: none;">
-                            <select id="clickupTaskSelect" class="input-field" onchange="handleClickUpTaskSelection()">
+                            <input type="text" id="clickupTaskSearch" class="input-field"
+                                   placeholder="Search tasks..."
+                                   oninput="filterClickUpTasks()"
+                                   style="margin-bottom: 8px;">
+                            <select id="clickupTaskSelect" class="input-field" onchange="handleClickUpTaskSelection()" size="10">
                                 <option value="">Select a task...</option>
                             </select>
                             <p style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); margin: 4px 0 0 0;">
@@ -2841,15 +2845,29 @@
                     }
                 }
 
-                console.log(`[ClickUp] Total tasks loaded: ${clickupTasks.length}`);
+                console.log(`[ClickUp] Total tasks loaded (with duplicates): ${clickupTasks.length}`);
+
+                // Remove duplicates based on task ID
+                const uniqueTasksMap = new Map();
+                clickupTasks.forEach(task => {
+                    if (!uniqueTasksMap.has(task.id)) {
+                        uniqueTasksMap.set(task.id, task);
+                    }
+                });
+                const uniqueTasks = Array.from(uniqueTasksMap.values());
+
+                console.log(`[ClickUp] Unique tasks: ${uniqueTasks.length} (removed ${clickupTasks.length - uniqueTasks.length} duplicates)`);
 
                 // Filter tasks with "in progress" status
-                const inProgressTasks = clickupTasks.filter(task => {
+                const inProgressTasks = uniqueTasks.filter(task => {
                     const status = task.status?.toLowerCase() || '';
                     return status.includes('in progress') || status.includes('in-progress') || status === 'in progress';
                 });
 
                 console.log(`[ClickUp] Tasks with "in progress" status: ${inProgressTasks.length}`);
+
+                // Store the filtered tasks globally for search functionality
+                window.allClickUpTasks = inProgressTasks;
 
                 // Populate task dropdown with only in-progress tasks
                 taskSelect.innerHTML = '<option value="">Select a task...</option>';
@@ -2894,6 +2912,39 @@
             // Auto-fill task name if it's empty
             if (taskUrl && taskName && !taskNameInput.value) {
                 taskNameInput.value = taskName;
+            }
+        }
+
+        // Filter ClickUp tasks based on search input
+        function filterClickUpTasks() {
+            const searchInput = document.getElementById('clickupTaskSearch');
+            const taskSelect = document.getElementById('clickupTaskSelect');
+
+            if (!searchInput || !taskSelect || !window.allClickUpTasks) return;
+
+            const searchTerm = searchInput.value.toLowerCase().trim();
+
+            // Clear current options
+            taskSelect.innerHTML = '<option value="">Select a task...</option>';
+
+            // Filter tasks based on search term
+            const filteredTasks = window.allClickUpTasks.filter(task => {
+                const taskText = `${task.list.name} - ${task.name}`.toLowerCase();
+                return taskText.includes(searchTerm);
+            });
+
+            // Populate dropdown with filtered tasks
+            if (filteredTasks.length === 0) {
+                taskSelect.innerHTML += '<option value="" disabled>No tasks match your search</option>';
+            } else {
+                filteredTasks.forEach(task => {
+                    const option = document.createElement('option');
+                    option.value = task.url;
+                    option.textContent = `${task.list.name} - ${task.name}`;
+                    option.dataset.taskId = task.id;
+                    option.dataset.taskName = task.name;
+                    taskSelect.appendChild(option);
+                });
             }
         }
 
