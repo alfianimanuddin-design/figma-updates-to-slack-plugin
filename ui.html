@@ -2327,8 +2327,10 @@
             } else if (msg.type === 'save-slack-token-error') {
                 console.error('Error saving token:', msg.error);
             } else if (msg.type === 'load-clickup-token-success') {
+                console.log('ClickUp token loaded:', msg.data ? 'Token exists' : 'No token');
                 if (msg.data) {
                     clickupAccessToken = msg.data;
+                    console.log('ClickUp connected! Updating UI...');
                     updateClickUpUI(true);
                     loadClickUpWorkspaces();
                 }
@@ -2689,10 +2691,13 @@
             const userInfo = document.getElementById('clickupUserInfo');
             const usernameEl = document.getElementById('clickupUsername');
 
-            if (isConnected && clickupUser) {
-                btn.style.display = 'none';
-                userInfo.style.display = 'block';
-                usernameEl.textContent = clickupUser.username || clickupUser.email || 'Unknown User';
+            // Show dropdown if we have access token, regardless of user data
+            if (isConnected && clickupAccessToken) {
+                if (clickupUser) {
+                    btn.style.display = 'none';
+                    userInfo.style.display = 'block';
+                    usernameEl.textContent = clickupUser.username || clickupUser.email || 'Unknown User';
+                }
                 updateClickUpTaskInput(true);
             } else {
                 btn.style.display = 'block';
@@ -2707,8 +2712,9 @@
             const inputContainer = document.getElementById('clickupLinkInputContainer');
             const connectPrompt = document.getElementById('clickupConnectPrompt');
 
-            if (isConnected && clickupAccessToken) {
-                // Automatically show dropdown when connected
+            // Simple logic: if we have a token, show dropdown. Otherwise show manual input.
+            if (clickupAccessToken) {
+                // Show dropdown when we have a token
                 if (dropdownContainer) dropdownContainer.style.display = 'block';
                 if (inputContainer) inputContainer.style.display = 'none';
                 if (connectPrompt) connectPrompt.style.display = 'none';
@@ -2716,7 +2722,7 @@
                 // Load tasks automatically
                 await populateClickUpTasks();
             } else {
-                // Show manual input by default
+                // Show manual input when no token
                 if (dropdownContainer) dropdownContainer.style.display = 'none';
                 if (inputContainer) inputContainer.style.display = 'block';
                 if (connectPrompt) connectPrompt.style.display = 'block';
