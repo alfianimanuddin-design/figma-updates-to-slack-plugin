@@ -2628,100 +2628,66 @@
                 const authState = data.state; // Store state for polling
                 console.log('[ClickUp] Auth state:', authState);
 
-                // Open OAuth window
-                const authWindow = window.open(data.authUrl, 'ClickUp Authorization', 'width=600,height=700');
+                // Open authorization URL in new tab (Figma plugins can't use window.open)
+                window.open(data.authUrl, '_blank');
 
-                if (!authWindow) {
-                    throw new Error('Failed to open authorization window. Please allow popups.');
-                }
+                // Show waiting message
+                statusEl.innerHTML = '<p style="color: #3b82f6; font-size: 11px; margin: 8px 0;">⏳ Waiting for authorization... Please complete the authorization in the browser tab and return here.</p>';
 
-                // Listen for the OAuth callback (primary method)
-                const messageHandler = async function handleOAuthCallback(event) {
-                    console.log('[ClickUp] Received window message:', event.data);
+                // Poll server for token
+                console.log('[ClickUp] Starting to poll for token...');
+                let pollAttempts = 0;
+                const maxAttempts = 60; // Poll for 2 minutes (60 * 2 seconds)
 
-                    if (event.data.type === 'clickup-auth-success') {
-                        console.log('[ClickUp] Auth success message received via postMessage!');
-                        clearInterval(pollInterval);
-                        window.removeEventListener('message', messageHandler);
-
-                        clickupAccessToken = event.data.data.access_token;
-                        clickupUser = event.data.data.user;
-
-                        console.log('[ClickUp] Saving token to Figma storage...');
-
-                        // Save to Figma storage
-                        parent.postMessage({
-                            pluginMessage: {
-                                type: 'save-clickup-token',
-                                data: clickupAccessToken
-                            }
-                        }, '*');
-
-                        parent.postMessage({
-                            pluginMessage: {
-                                type: 'save-clickup-user',
-                                data: clickupUser
-                            }
-                        }, '*');
-
-                        console.log('[ClickUp] Updating UI...');
-                        updateClickUpUI(true);
-                        await loadClickUpWorkspaces();
-
-                        statusEl.innerHTML = '<p style="color: #059669; font-size: 11px; margin: 8px 0;">✓ Successfully connected to ClickUp!</p>';
-                        setTimeout(() => { statusEl.innerHTML = ''; }, 3000);
-                    }
-                };
-
-                window.addEventListener('message', messageHandler);
-
-                // Fallback: Poll for window close and retrieve token from server
                 const pollInterval = setInterval(async () => {
-                    if (authWindow.closed) {
-                        console.log('[ClickUp] Auth window closed, retrieving token from server...');
-                        clearInterval(pollInterval);
-                        window.removeEventListener('message', messageHandler);
+                    pollAttempts++;
+                    console.log(`[ClickUp] Polling attempt ${pollAttempts}/${maxAttempts}`);
 
-                        try {
-                            // Retrieve token from server using state
-                            const tokenResponse = await fetch(`https://figma-slack-bridge.vercel.app/api/clickup-token-exchange?state=${authState}`);
-                            const tokenData = await tokenResponse.json();
+                    try {
+                        // Retrieve token from server using state
+                        const tokenResponse = await fetch(`https://figma-slack-bridge.vercel.app/api/clickup-token-exchange?state=${authState}`);
+                        const tokenData = await tokenResponse.json();
 
-                            if (tokenData.success && tokenData.access_token) {
-                                console.log('[ClickUp] Token retrieved from server!');
-                                clickupAccessToken = tokenData.access_token;
-                                clickupUser = tokenData.user;
+                        if (tokenData.success && tokenData.access_token) {
+                            console.log('[ClickUp] Token retrieved from server!');
+                            clearInterval(pollInterval);
 
-                                // Save to Figma storage
-                                parent.postMessage({
-                                    pluginMessage: {
-                                        type: 'save-clickup-token',
-                                        data: clickupAccessToken
-                                    }
-                                }, '*');
+                            clickupAccessToken = tokenData.access_token;
+                            clickupUser = tokenData.user;
 
-                                parent.postMessage({
-                                    pluginMessage: {
-                                        type: 'save-clickup-user',
-                                        data: clickupUser
-                                    }
-                                }, '*');
+                            // Save to Figma storage
+                            parent.postMessage({
+                                pluginMessage: {
+                                    type: 'save-clickup-token',
+                                    data: clickupAccessToken
+                                }
+                            }, '*');
 
-                                updateClickUpUI(true);
-                                await loadClickUpWorkspaces();
+                            parent.postMessage({
+                                pluginMessage: {
+                                    type: 'save-clickup-user',
+                                    data: clickupUser
+                                }
+                            }, '*');
 
-                                statusEl.innerHTML = '<p style="color: #059669; font-size: 11px; margin: 8px 0;">✓ Successfully connected to ClickUp!</p>';
-                                setTimeout(() => { statusEl.innerHTML = ''; }, 3000);
-                            } else {
-                                console.log('[ClickUp] No token found on server');
-                                statusEl.innerHTML = '<p style="color: #dc2626; font-size: 11px; margin: 8px 0;">✗ Authorization completed but token not saved. Please try again.</p>';
-                            }
-                        } catch (error) {
-                            console.error('[ClickUp] Error retrieving token:', error);
+                            updateClickUpUI(true);
+                            await loadClickUpWorkspaces();
+
+                            statusEl.innerHTML = '<p style="color: #059669; font-size: 11px; margin: 8px 0;">✓ Successfully connected to ClickUp!</p>';
+                            setTimeout(() => { statusEl.innerHTML = ''; }, 3000);
+                        } else if (pollAttempts >= maxAttempts) {
+                            console.log('[ClickUp] Polling timeout');
+                            clearInterval(pollInterval);
+                            statusEl.innerHTML = '<p style="color: #dc2626; font-size: 11px; margin: 8px 0;">✗ Authorization timeout. Please try again.</p>';
+                        }
+                    } catch (error) {
+                        console.error('[ClickUp] Error polling for token:', error);
+                        if (pollAttempts >= maxAttempts) {
+                            clearInterval(pollInterval);
                             statusEl.innerHTML = '<p style="color: #dc2626; font-size: 11px; margin: 8px 0;">✗ Failed to retrieve token. Please try again.</p>';
                         }
                     }
-                }, 500);
+                }, 2000); // Poll every 2 seconds
 
             } catch (error) {
                 console.error('ClickUp auth error:', error);
