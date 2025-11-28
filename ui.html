@@ -2252,14 +2252,12 @@
 
         // Validate form and enable/disable submit button
         function validateForm() {
-            const taskName = document.getElementById('taskName').value.trim();
             const clickupLink = getClickUpLink();
             const figmaLink = document.getElementById('figmaLink').value.trim();
             const description = document.getElementById('descriptionEditor').textContent.trim();
             const slackChannel = document.getElementById('slackChannel').value.trim();
 
-            const isValid = taskName &&
-                          isValidClickUpUrl(clickupLink) &&
+            const isValid = isValidClickUpUrl(clickupLink) &&
                           isValidFigmaUrl(figmaLink) &&
                           description &&
                           acknowledgedBy.length > 0 &&
@@ -3721,7 +3719,10 @@
 
             const descEditor = document.getElementById('descriptionEditor');
             if (descEditor) {
-                descEditor.addEventListener('input', updatePreview);
+                descEditor.addEventListener('input', function() {
+                    updatePreview();
+                    validateForm();
+                });
 
                 // Keyboard shortcuts for rich text editor
                 descEditor.addEventListener('keydown', function(e) {
