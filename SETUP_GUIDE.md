@@ -118,11 +118,23 @@ This enables autocomplete when you want to acknowledge team members.
 
 ---
 
-## Part 4: Send Your First Update! (1 minute)
+## Part 4: [Optional] Connect ClickUp Integration
+
+Want to link your Figma commits to ClickUp tasks? Follow the [ClickUp Setup Guide](./CLICKUP_SETUP.md) to:
+- Connect your ClickUp workspace
+- Link commits to specific tasks
+- Auto-update task status and custom fields
+
+**This is completely optional** - you can skip this and use the plugin without ClickUp.
+
+---
+
+## Part 5: Send Your First Update! (1 minute)
 
 1. Close settings (click **"✖"** or **"← Back"**)
 2. Fill out the commit form:
-   - **Task Name**: e.g., "Updated homepage hero section"
+   - **[Optional] ClickUp Task**: Search and select a task (if connected)
+   - **Task Name**: e.g., "Updated homepage hero section" (auto-filled if ClickUp task selected)
    - **Commit Type**: Click ✨ Feature, 🐛 Fix, 🔄 Update, 🎯 Final, or 👀 Review
    - **Description**: Add more details (optional)
    - **Acknowledged by**: Start typing a teammate's name (optional)
@@ -130,6 +142,7 @@ This enables autocomplete when you want to acknowledge team members.
    - **Channel**: Select where to post
 3. Click **"📤 Commit to Slack"**
 4. Check your Slack channel! 🎉
+5. If you linked a ClickUp task, check ClickUp - it's been updated automatically!
 
 ---
 
@@ -212,6 +225,12 @@ This enables autocomplete when you want to acknowledge team members.
 
 ---
 
+### ClickUp Integration Issues
+
+For ClickUp-specific troubleshooting, see the [ClickUp Setup Guide](./CLICKUP_SETUP.md#troubleshooting).
+
+---
+
 ## 🆘 Still Need Help?
 
 1. Check the [GitHub Issues](https://github.com/alfianimanuddin-design/figma-updates-to-slack-plugin/issues)
@@ -219,6 +238,7 @@ This enables autocomplete when you want to acknowledge team members.
    - What you were trying to do
    - What error message you saw
    - Screenshots if possible
+3. For ClickUp integration issues, see [CLICKUP_SETUP.md](./CLICKUP_SETUP.md)
 
 ---
 
