@@ -3,6 +3,49 @@
 <head>
     <meta charset="utf-8">
     <title>Figma to Slack Notifier</title>
+
+    <!-- Privacy-focused Analytics -->
+    <script>
+        // Simple, privacy-focused analytics
+        // No PII collected - only usage metrics
+        const Analytics = {
+            endpoint: 'https://figma-slack-bridge.vercel.app/api/analytics',
+            sessionId: null,
+            enabled: true, // Can be toggled by user in settings
+
+            init() {
+                // Generate anonymous session ID (no user identification)
+                this.sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                this.track('plugin_opened');
+            },
+
+            track(event, properties = {}) {
+                if (!this.enabled) return;
+
+                const data = {
+                    event,
+                    properties: {
+                        ...properties,
+                        timestamp: new Date().toISOString(),
+                        session_id: this.sessionId,
+                        plugin_version: '2.0.0' // Update this when releasing new versions
+                    }
+                };
+
+                // Send asynchronously, don't block UI
+                fetch(this.endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                    keepalive: true
+                }).catch(() => {}); // Silently fail if offline
+            }
+        };
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => Analytics.init());
+    </script>
+
     <style>
         * {
             margin: 0;
@@ -2186,6 +2229,38 @@
     </div>
 
     <script>
+        // Development Mode Toggle
+        // Set to true for development, false for production
+        const IS_DEVELOPMENT = false;
+
+        // Console wrapper - only logs in development mode
+        (function() {
+            const originalConsole = {
+                log: console.log,
+                error: console.error,
+                warn: console.warn,
+                info: console.info,
+                debug: console.debug
+            };
+
+            // Override console methods
+            console.log = function(...args) {
+                if (IS_DEVELOPMENT) originalConsole.log.apply(console, args);
+            };
+            console.error = function(...args) {
+                if (IS_DEVELOPMENT) originalConsole.error.apply(console, args);
+            };
+            console.warn = function(...args) {
+                if (IS_DEVELOPMENT) originalConsole.warn.apply(console, args);
+            };
+            console.info = function(...args) {
+                if (IS_DEVELOPMENT) originalConsole.info.apply(console, args);
+            };
+            console.debug = function(...args) {
+                if (IS_DEVELOPMENT) originalConsole.debug.apply(console, args);
+            };
+        })();
+
         // Configuration
         // IMPORTANT: This should be the production server URL for all users
         // Only change this to 'http://localhost:3000' during local development
@@ -2903,6 +2978,9 @@
                             updateClickUpUI(true);
                             await loadClickUpWorkspaces();
 
+                            // Track successful connection
+                            Analytics.track('clickup_connected');
+
                             statusEl.innerHTML = '<p style="color: #059669; font-size: 11px; margin: 8px 0;">✓ Successfully connected to ClickUp!</p>';
                             setTimeout(() => { statusEl.innerHTML = ''; }, 3000);
                         } else if (pollAttempts >= maxAttempts) {
@@ -2950,6 +3028,9 @@
             parent.postMessage({ pluginMessage: { type: 'save-clickup-token', data: null } }, '*');
             parent.postMessage({ pluginMessage: { type: 'save-clickup-user', data: null } }, '*');
             parent.postMessage({ pluginMessage: { type: 'save-clickup-config', data: null } }, '*');
+
+            // Track disconnection
+            Analytics.track('clickup_disconnected');
 
             updateClickUpUI(false);
         }
@@ -3247,6 +3328,11 @@
             `;
 
             console.log('[ClickUp] Configuration saved:', clickupConfig);
+
+            // Track configuration save
+            Analytics.track('clickup_config_saved', {
+                folder_count: selectedFolderIds.length
+            });
 
             // Fetch tasks with the new configuration
             statusEl.textContent = '✓ Configuration saved! Fetching tasks...';
@@ -4641,6 +4727,14 @@
                             // Don't fail the whole operation if custom fields update fails
                         }
                     }
+
+                    // Track successful post to Slack
+                    Analytics.track('message_posted', {
+                        has_clickup_task: !!window.selectedClickUpTask,
+                        has_figma_link: !!figmaLink,
+                        acknowledgment_count: acknowledgedBy.length,
+                        cc_count: ccUsers.length
+                    });
 
                     // Show success message
                     showStatus('✅ Notification sent successfully! All custom fields updated.', 'success');

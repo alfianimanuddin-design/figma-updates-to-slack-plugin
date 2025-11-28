@@ -50,6 +50,8 @@ Professional "Final Design" format:
 - 🔄 **Auto-Update** - Update task status & fields
 - 🔍 **Task Search** - Find tasks by name
 - 📋 **Smart Filter** - Show only in-progress tasks
+- 🏢 **Multi-Workspace** - Configure YOUR workspace, spaces, & folders
+- 🔧 **SaaS-Ready** - Works for any organization
 
 </td>
 </tr>
@@ -279,6 +281,52 @@ Use [Slack Block Kit Builder](https://app.slack.com/block-kit-builder) to design
 
 ---
 
+## 🔐 Privacy & Analytics
+
+### Your Privacy is Protected
+
+- **🔒 No Personal Data Collected** - We never collect, store, or transmit any PII (Personally Identifiable Information)
+- **🛡️ Encrypted Storage** - All tokens stored locally using Figma's encrypted client storage
+- **📊 Anonymous Metrics Only** - We collect basic usage metrics to improve the plugin:
+  - Plugin opens/closes
+  - Feature usage (e.g., "ClickUp connected", "Message posted")
+  - Error rates
+  - No user identification, workspace names, or message content
+
+### What We Track
+
+```javascript
+// Example of what we track:
+{
+  event: "message_posted",
+  properties: {
+    has_clickup_task: true,        // Boolean only
+    has_figma_link: true,           // Boolean only
+    acknowledgment_count: 2,        // Count only
+    plugin_version: "2.0.0",        // For compatibility
+    session_id: "anonymous_123"     // Random, non-identifying
+  }
+}
+// NO: usernames, emails, task names, descriptions, or workspace IDs
+```
+
+### Why Analytics?
+
+Analytics help us:
+- Identify bugs and errors
+- Understand which features are most valuable
+- Make data-driven improvements
+- Ensure compatibility across updates
+
+### Opt-Out
+
+To disable analytics, open the browser console in the plugin and run:
+```javascript
+Analytics.enabled = false;
+```
+
+---
+
 ## 🐛 Troubleshooting
 
 ### Common Issues
@@ -304,7 +352,7 @@ Use [Slack Block Kit Builder](https://app.slack.com/block-kit-builder) to design
 
 ## 🚦 Roadmap
 
-**Current Version: 2.0.0**
+**Current Version: 2.0.0** - SaaS-Ready Multi-Workspace Support
 
 ### ✅ Completed
 - [x] Core posting functionality
@@ -317,6 +365,9 @@ Use [Slack Block Kit Builder](https://app.slack.com/block-kit-builder) to design
 - [x] **Task linking & auto-update**
 - [x] **Task search & filtering**
 - [x] **Custom field updates**
+- [x] **🎉 Multi-Workspace Support** - Users can configure their own ClickUp workspaces
+- [x] **🎉 User-Configurable Folders** - Select which folders to pull tasks from
+- [x] **🎉 Privacy-Focused Analytics** - Anonymous usage metrics
 - [x] Security improvements
 - [x] Loading states & UI feedback
 - [x] Required field validation

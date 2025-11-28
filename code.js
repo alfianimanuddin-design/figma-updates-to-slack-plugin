@@ -1,3 +1,35 @@
+// Development Mode Toggle
+// Set to true for development, false for production
+const IS_DEVELOPMENT = false;
+
+// Console wrapper - only logs in development mode
+(function() {
+    const originalConsole = {
+        log: console.log,
+        error: console.error,
+        warn: console.warn,
+        info: console.info,
+        debug: console.debug
+    };
+
+    // Override console methods
+    console.log = function(...args) {
+        if (IS_DEVELOPMENT) originalConsole.log.apply(console, args);
+    };
+    console.error = function(...args) {
+        if (IS_DEVELOPMENT) originalConsole.error.apply(console, args);
+    };
+    console.warn = function(...args) {
+        if (IS_DEVELOPMENT) originalConsole.warn.apply(console, args);
+    };
+    console.info = function(...args) {
+        if (IS_DEVELOPMENT) originalConsole.info.apply(console, args);
+    };
+    console.debug = function(...args) {
+        if (IS_DEVELOPMENT) originalConsole.debug.apply(console, args);
+    };
+})();
+
 figma.showUI(__html__, { width: 500, height: 800 });
 
 // Send current page info to UI
