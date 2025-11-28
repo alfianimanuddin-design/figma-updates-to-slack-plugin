@@ -2082,14 +2082,33 @@
         // IMPORTANT: This should be the production server URL for all users
         // Only change this to 'http://localhost:3000' during local development
         const SERVER_URL = 'https://figma-slack-bridge.vercel.app';
-        const selectedCommitType = 'final'; // Hardcoded to final design
-
         // Video Tutorial URL (optional)
         // Set this to your video tutorial URL (YouTube, Loom, Vimeo, etc.)
         // Leave as empty string ('') if video is not ready yet
         // Example: const VIDEO_URL = 'https://www.youtube.com/embed/YOUR_VIDEO_ID';
         // Example: const VIDEO_URL = 'https://www.loom.com/embed/YOUR_VIDEO_ID';
         const VIDEO_URL = '';
+
+        // Security: HTML sanitization utility
+        function sanitizeHTML(str) {
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
+        }
+
+        // Security: Validate and sanitize URL
+        function sanitizeURL(url) {
+            try {
+                const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
+                // Only allow http and https protocols
+                if (!['http:', 'https:'].includes(parsed.protocol)) {
+                    return null;
+                }
+                return parsed.href;
+            } catch {
+                return null;
+            }
+        }
 
         // State variables
         let serverOnline = false;
@@ -3783,19 +3802,26 @@
         function renderAcknowledgedByTags() {
             const container = document.getElementById('acknowledgedByTags');
             const input = document.getElementById('acknowledgedByInput');
-            
+
             // Clear existing tags
             const existingTags = container.querySelectorAll('.tag');
             existingTags.forEach(tag => tag.remove());
 
-            // Add tags before input
+            // Add tags before input (secure version)
             acknowledgedBy.forEach(username => {
                 const tag = document.createElement('div');
                 tag.className = 'tag';
-                tag.innerHTML = `
-                    @${username}
-                    <button type="button" class="tag-remove" onclick="removeAcknowledgedBy('${username}')">&times;</button>
-                `;
+
+                const usernameText = document.createTextNode(`@${username}`);
+                tag.appendChild(usernameText);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'tag-remove';
+                removeBtn.textContent = '×';
+                removeBtn.onclick = () => removeAcknowledgedBy(username);
+                tag.appendChild(removeBtn);
+
                 container.insertBefore(tag, input);
             });
         }
@@ -3808,14 +3834,21 @@
             const existingTags = container.querySelectorAll('.tag');
             existingTags.forEach(tag => tag.remove());
 
-            // Add tags before input
+            // Add tags before input (secure version)
             ccUsers.forEach(username => {
                 const tag = document.createElement('div');
                 tag.className = 'tag';
-                tag.innerHTML = `
-                    @${username}
-                    <button type="button" class="tag-remove" onclick="removeCcUser('${username}')">&times;</button>
-                `;
+
+                const usernameText = document.createTextNode(`@${username}`);
+                tag.appendChild(usernameText);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'tag-remove';
+                removeBtn.textContent = '×';
+                removeBtn.onclick = () => removeCcUser(username);
+                tag.appendChild(removeBtn);
+
                 container.insertBefore(tag, input);
             });
         }
@@ -3985,32 +4018,14 @@
             const figmaLink = document.getElementById('figmaLink').value.trim();
             const description = document.getElementById('descriptionEditor').textContent.trim();
 
-            const commitTypes = {
-                feat: 'New feature for',
-                fix: 'Bug fix for',
-                update: 'Update for',
-                final: 'FINAL DESIGN FOR'
-            };
+            let preview = '<div class="preview-checkmarks">✅✅✅✅✅</div>';
 
-            let preview = '';
-
-            // Checkmarks for final design (show standard emoji in preview)
-            if (selectedCommitType === 'final') {
-                preview += '<div class="preview-checkmarks">✅✅✅✅✅</div>';
-            }
-            
             // Title - show the task name as clickable link if ClickUp link exists
-            let titleDisplay = '';
-            if (taskName) {
-                if (clickupLink) {
-                    titleDisplay = `<span class="preview-link">${taskName}</span>`;
-                } else {
-                    titleDisplay = taskName;
-                }
-            } else {
-                titleDisplay = '[Task Name]';
-            }
-            preview += `<div class="preview-title">${commitTypes[selectedCommitType]}:<br>${titleDisplay} ${description || '[Description will appear here]'}</div>`;
+            const titleDisplay = taskName
+                ? (clickupLink ? `<span class="preview-link">${taskName}</span>` : taskName)
+                : '[Task Name]';
+
+            preview += `<div class="preview-title">FINAL DESIGN FOR:<br>${titleDisplay} ${description || '[Description will appear here]'}</div>`;
 
             // Figma link - show "Figma file" as clickable link
             let figmaDisplay = '';
@@ -4161,50 +4176,25 @@
                 const description = convertHtmlToSlackMarkdown(descriptionEditor);
                 const webhookUrl = document.getElementById('slackChannel').value.trim();
 
-                const commitTypes = {
-                    feat: 'NEW FEATURE FOR',
-                    fix: 'BUG FIX FOR', 
-                    update: 'UPDATE FOR',
-                    final: 'FINAL DESIGN FOR'
-                };
-
                 // Build title with optional ClickUp link
-                let titleText = '';
-                if (taskName) {
-                    if (clickupLink) {
-                        // Ensure proper URL format
-                        const formattedClickupLink = clickupLink.startsWith('http') ? clickupLink : `https://${clickupLink}`;
-                        titleText = `<${formattedClickupLink}|${taskName}>`;
-                    } else {
-                        titleText = taskName;
-                    }
-                } else {
-                    titleText = '[Task Name Required]';
-                }
-                
-                // Create blocks array for proper Slack formatting
+                const titleText = taskName
+                    ? (clickupLink
+                        ? `<${clickupLink.startsWith('http') ? clickupLink : `https://${clickupLink}`}|${taskName}>`
+                        : taskName)
+                    : '[Task Name Required]';
+
+                // Create blocks array for Slack formatting
                 const blocks = [];
-                
-                // Add checkmarks and title as header for final design
                 const titleWithDescription = description ? `${titleText}\n${description}` : titleText;
 
-                if (selectedCommitType === 'final') {
-                    blocks.push({
-                        type: "section",
-                        text: {
-                            type: "mrkdwn",
-                            text: `:checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4:\n*${commitTypes[selectedCommitType]}:* ${titleWithDescription}`
-                        }
-                    });
-                } else {
-                    blocks.push({
-                        type: "section",
-                        text: {
-                            type: "mrkdwn",
-                            text: `*${commitTypes[selectedCommitType]}:*\n${titleWithDescription}`
-                        }
-                    });
-                }
+                // Add checkmarks and title as header for final design
+                blocks.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: `:checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4::checklistiyang4:\n*FINAL DESIGN FOR:* ${titleWithDescription}`
+                    }
+                });
                 
                 // Add Figma link with default text "Figma file"
                 if (figmaLink) {
