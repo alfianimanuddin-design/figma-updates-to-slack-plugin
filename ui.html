@@ -4199,6 +4199,17 @@
                     validateForm();
                 });
 
+                // Handle paste to strip all formatting and styles
+                descEditor.addEventListener('paste', function(e) {
+                    e.preventDefault();
+
+                    // Get plain text from clipboard
+                    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+
+                    // Insert plain text at cursor position
+                    document.execCommand('insertText', false, text);
+                });
+
                 // Keyboard shortcuts for rich text editor
                 descEditor.addEventListener('keydown', function(e) {
                     // Check for CMD (Mac) or CTRL (Windows/Linux)
