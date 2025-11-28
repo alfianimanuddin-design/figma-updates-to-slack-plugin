@@ -111,5 +111,24 @@ figma.ui.onmessage = async (msg) => {
     } catch (error) {
       figma.ui.postMessage({ type: 'load-clickup-user-error', error: error.message });
     }
+  } else if (msg.type === 'save-clickup-config') {
+    try {
+      // If data is null, delete the key
+      if (msg.data === null) {
+        await figma.clientStorage.deleteAsync('clickup-config');
+      } else {
+        await figma.clientStorage.setAsync('clickup-config', msg.data);
+      }
+      figma.ui.postMessage({ type: 'save-clickup-config-success' });
+    } catch (error) {
+      figma.ui.postMessage({ type: 'save-clickup-config-error', error: error.message });
+    }
+  } else if (msg.type === 'load-clickup-config') {
+    try {
+      const data = await figma.clientStorage.getAsync('clickup-config');
+      figma.ui.postMessage({ type: 'load-clickup-config-success', data });
+    } catch (error) {
+      figma.ui.postMessage({ type: 'load-clickup-config-error', error: error.message });
+    }
   }
 };

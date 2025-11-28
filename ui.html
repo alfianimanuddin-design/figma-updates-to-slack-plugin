@@ -1529,9 +1529,9 @@
                     <div class="welcome-body">
                         <div class="welcome-features">
                             <div class="welcome-feature">
-                                <span class="welcome-feature-icon">✨</span>
-                                <strong>Git-Style Commits</strong><br>
-                                5 commit types
+                                <span class="welcome-feature-icon">✅</span>
+                                <strong>Final Design Format</strong><br>
+                                Professional updates
                             </div>
                             <div class="welcome-feature">
                                 <span class="welcome-feature-icon">👥</span>
@@ -1758,7 +1758,7 @@
                             <input type="url" id="clickupLink" class="input-field"
                                    placeholder="https://app.clickup.com/t/..." required>
                             <p id="clickupConnectPrompt" style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); margin: 4px 0 0 0; display: none;">
-                                💡 <a href="#" onclick="openSettings(); return false;" style="color: #6366f1;">Connect ClickUp</a> to select tasks from a dropdown
+                                💡 <a href="#" onclick="openSettings(); return false;" style="color: #6366f1;">Connect ClickUp</a> to select tasks from your ClickUp directly
                             </p>
                             <p id="clickupBackToDropdown" style="font-size: 10px; color: var(--figma-color-text-secondary, #6b7280); margin: 4px 0 0 0; display: none;">
                                 <a href="#" onclick="showClickUpDropdown(); return false;" style="color: #6366f1;">Select from dropdown instead</a>
@@ -2033,6 +2033,54 @@
                             <button class="fetch-btn" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); font-size: 11px; padding: 6px 12px;" onclick="disconnectClickUp()">
                                 🔓 Disconnect
                             </button>
+                        </div>
+
+                        <!-- ClickUp Configuration Section -->
+                        <div id="clickupConfigSection" style="display: none; margin-top: 16px; padding: 16px; background: var(--figma-color-bg-secondary, #f9fafb); border: 1px solid var(--figma-color-border, #e5e5e5); border-radius: 8px;">
+                            <h4 style="font-size: 12px; font-weight: 600; margin-bottom: 12px; color: var(--figma-color-text, #1e1e1e);">Configure Task Fetching</h4>
+                            <p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin-bottom: 12px; line-height: 1.5;">
+                                Select which workspace, space, and folders to fetch tasks from. This allows you to customize which tasks appear in the ClickUp task dropdown.
+                            </p>
+
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label for="clickupWorkspaceSelect" style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 6px;">
+                                    Workspace <span style="color: #dc2626;">*</span>
+                                </label>
+                                <select id="clickupWorkspaceSelect" class="input-field" onchange="onWorkspaceChange()" style="width: 100%;">
+                                    <option value="">Select a workspace...</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label for="clickupSpaceSelect" style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 6px;">
+                                    Space <span style="color: #dc2626;">*</span>
+                                </label>
+                                <select id="clickupSpaceSelect" class="input-field" onchange="onSpaceChange()" style="width: 100%;" disabled>
+                                    <option value="">Select a space...</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label for="clickupFoldersSelect" style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 6px;">
+                                    Folders <span style="color: #dc2626;">*</span>
+                                </label>
+                                <div id="clickupFoldersContainer" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--figma-color-border, #d1d5db); border-radius: 4px; padding: 8px; background: white;">
+                                    <p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin: 0;">
+                                        Select a space to see available folders
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div id="clickupConfigStatus" style="font-size: 11px; margin-bottom: 12px; display: none;"></div>
+
+                            <button class="fetch-btn" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); width: 100%;" onclick="saveClickUpConfig()">
+                                💾 Save Configuration
+                            </button>
+
+                            <div id="clickupConfigSummary" style="display: none; margin-top: 12px; padding: 8px; background: #dbeafe; border-radius: 4px; font-size: 11px;">
+                                <strong>Current Configuration:</strong><br>
+                                <span id="configSummaryText"></span>
+                            </div>
                         </div>
 
                         <div class="info-box" style="margin-top: 12px;">
@@ -2460,6 +2508,30 @@
                 console.log('Successfully saved ClickUp user to Figma storage');
             } else if (msg.type === 'save-clickup-user-error') {
                 console.error('Error saving ClickUp user:', msg.error);
+            } else if (msg.type === 'load-clickup-config-success') {
+                console.log('ClickUp config loaded:', msg.data ? 'Config exists' : 'No config');
+                if (msg.data) {
+                    clickupConfig = msg.data;
+                    console.log('ClickUp config:', clickupConfig);
+
+                    // Display config summary if elements exist
+                    const summaryEl = document.getElementById('clickupConfigSummary');
+                    const summaryTextEl = document.getElementById('configSummaryText');
+                    if (summaryEl && summaryTextEl && clickupConfig.workspaceName) {
+                        summaryEl.style.display = 'block';
+                        summaryTextEl.innerHTML = `
+                            Workspace: <strong>${clickupConfig.workspaceName}</strong><br>
+                            Space: <strong>${clickupConfig.spaceName}</strong><br>
+                            Folders: <strong>${clickupConfig.folderNames.join(', ')}</strong>
+                        `;
+                    }
+                }
+            } else if (msg.type === 'load-clickup-config-error') {
+                console.error('Error loading ClickUp config:', msg.error);
+            } else if (msg.type === 'save-clickup-config-success') {
+                console.log('Successfully saved ClickUp config to Figma storage');
+            } else if (msg.type === 'save-clickup-config-error') {
+                console.error('Error saving ClickUp config:', msg.error);
             } else if (msg.type === 'current-page-info') {
                 const figmaLinkInput = document.getElementById('figmaLink');
                 if (figmaLinkInput && msg.pageId) {
@@ -2750,11 +2822,20 @@
         let clickupUser = null;
         let clickupWorkspaces = [];
         let clickupTasks = [];
+        let clickupConfig = {
+            workspaceId: null,
+            workspaceName: null,
+            spaceId: null,
+            spaceName: null,
+            folderIds: [],
+            folderNames: []
+        };
 
-        // Load ClickUp token on page load
+        // Load ClickUp token and config on page load
         async function loadClickUpAuth() {
             parent.postMessage({ pluginMessage: { type: 'load-clickup-token' } }, '*');
             parent.postMessage({ pluginMessage: { type: 'load-clickup-user' } }, '*');
+            parent.postMessage({ pluginMessage: { type: 'load-clickup-config' } }, '*');
         }
 
         // Connect to ClickUp via OAuth
@@ -2857,9 +2938,18 @@
             clickupUser = null;
             clickupWorkspaces = [];
             clickupTasks = [];
+            clickupConfig = {
+                workspaceId: null,
+                workspaceName: null,
+                spaceId: null,
+                spaceName: null,
+                folderIds: [],
+                folderNames: []
+            };
 
             parent.postMessage({ pluginMessage: { type: 'save-clickup-token', data: null } }, '*');
             parent.postMessage({ pluginMessage: { type: 'save-clickup-user', data: null } }, '*');
+            parent.postMessage({ pluginMessage: { type: 'save-clickup-config', data: null } }, '*');
 
             updateClickUpUI(false);
         }
@@ -2869,6 +2959,7 @@
             const btn = document.getElementById('clickupAuthBtn');
             const userInfo = document.getElementById('clickupUserInfo');
             const usernameEl = document.getElementById('clickupUsername');
+            const configSection = document.getElementById('clickupConfigSection');
 
             // Show dropdown if we have access token, regardless of user data
             if (isConnected && clickupAccessToken) {
@@ -2877,10 +2968,12 @@
                     userInfo.style.display = 'block';
                     usernameEl.textContent = clickupUser.username || clickupUser.email || 'Unknown User';
                 }
+                if (configSection) configSection.style.display = 'block';
                 updateClickUpTaskInput(true);
             } else {
                 btn.style.display = 'block';
                 userInfo.style.display = 'none';
+                if (configSection) configSection.style.display = 'none';
                 updateClickUpTaskInput(false);
             }
         }
@@ -2941,20 +3034,239 @@
             }
         }
 
-        // Hardcoded workspace, space, and folder IDs for Design Team
-        const CLICKUP_WORKSPACE_ID = '3688330'; // Flip workspace
-        const CLICKUP_SPACE_ID = '3872753'; // Design Team space
-        const CLICKUP_FOLDER_IDS = ['103653339', '103653376']; // Consumer Solutions and Business Solutions folders
+        // Load ClickUp workspaces and populate dropdown
+        async function loadClickUpWorkspaces() {
+            if (!clickupAccessToken) {
+                console.log('[ClickUp] No access token available');
+                return;
+            }
 
-        // Populate ClickUp tasks dropdown (from Consumer Solutions and Business Solutions folders)
+            try {
+                console.log('[ClickUp] Loading workspaces...');
+                const response = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-workspaces', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ accessToken: clickupAccessToken })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.teams) {
+                    clickupWorkspaces = data.teams;
+                    console.log('[ClickUp] Loaded workspaces:', clickupWorkspaces.length);
+
+                    const workspaceSelect = document.getElementById('clickupWorkspaceSelect');
+                    if (workspaceSelect) {
+                        workspaceSelect.innerHTML = '<option value="">Select a workspace...</option>';
+                        clickupWorkspaces.forEach(workspace => {
+                            const option = document.createElement('option');
+                            option.value = workspace.id;
+                            option.textContent = workspace.name;
+                            workspaceSelect.appendChild(option);
+                        });
+
+                        // If we have saved config, restore it
+                        if (clickupConfig.workspaceId) {
+                            workspaceSelect.value = clickupConfig.workspaceId;
+                            await onWorkspaceChange();
+                        }
+                    }
+                } else {
+                    console.error('[ClickUp] Failed to load workspaces:', data.error);
+                }
+            } catch (error) {
+                console.error('[ClickUp] Error loading workspaces:', error);
+            }
+        }
+
+        // Handle workspace selection change
+        async function onWorkspaceChange() {
+            const workspaceSelect = document.getElementById('clickupWorkspaceSelect');
+            const spaceSelect = document.getElementById('clickupSpaceSelect');
+            const foldersContainer = document.getElementById('clickupFoldersContainer');
+
+            const selectedWorkspaceId = workspaceSelect.value;
+
+            if (!selectedWorkspaceId) {
+                spaceSelect.disabled = true;
+                spaceSelect.innerHTML = '<option value="">Select a space...</option>';
+                foldersContainer.innerHTML = '<p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin: 0;">Select a workspace first</p>';
+                return;
+            }
+
+            const selectedWorkspace = clickupWorkspaces.find(w => w.id === selectedWorkspaceId);
+
+            if (selectedWorkspace && selectedWorkspace.spaces) {
+                console.log('[ClickUp] Loading spaces for workspace:', selectedWorkspace.name);
+
+                spaceSelect.disabled = false;
+                spaceSelect.innerHTML = '<option value="">Select a space...</option>';
+
+                selectedWorkspace.spaces.forEach(space => {
+                    const option = document.createElement('option');
+                    option.value = space.id;
+                    option.textContent = space.name;
+                    spaceSelect.appendChild(option);
+                });
+
+                // If we have saved config for this workspace, restore the space
+                if (clickupConfig.workspaceId === selectedWorkspaceId && clickupConfig.spaceId) {
+                    spaceSelect.value = clickupConfig.spaceId;
+                    await onSpaceChange();
+                }
+            }
+
+            foldersContainer.innerHTML = '<p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin: 0;">Select a space to see available folders</p>';
+        }
+
+        // Handle space selection change
+        async function onSpaceChange() {
+            const workspaceSelect = document.getElementById('clickupWorkspaceSelect');
+            const spaceSelect = document.getElementById('clickupSpaceSelect');
+            const foldersContainer = document.getElementById('clickupFoldersContainer');
+
+            const selectedWorkspaceId = workspaceSelect.value;
+            const selectedSpaceId = spaceSelect.value;
+
+            if (!selectedSpaceId) {
+                foldersContainer.innerHTML = '<p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin: 0;">Select a space to see available folders</p>';
+                return;
+            }
+
+            try {
+                foldersContainer.innerHTML = '<p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin: 0;">Loading folders...</p>';
+
+                const selectedWorkspace = clickupWorkspaces.find(w => w.id === selectedWorkspaceId);
+                const selectedSpace = selectedWorkspace?.spaces.find(s => s.id === selectedSpaceId);
+
+                if (selectedSpace && selectedSpace.folders) {
+                    console.log('[ClickUp] Displaying folders for space:', selectedSpace.name);
+
+                    if (selectedSpace.folders.length === 0) {
+                        foldersContainer.innerHTML = '<p style="font-size: 11px; color: var(--figma-color-text-secondary, #6b7280); margin: 0;">No folders found in this space</p>';
+                        return;
+                    }
+
+                    foldersContainer.innerHTML = '';
+
+                    selectedSpace.folders.forEach(folder => {
+                        const checkboxWrapper = document.createElement('label');
+                        checkboxWrapper.style.cssText = 'display: flex; align-items: center; padding: 6px; cursor: pointer; border-radius: 4px; transition: background 0.2s;';
+                        checkboxWrapper.onmouseover = () => checkboxWrapper.style.background = 'var(--figma-color-bg-hover, #f3f4f6)';
+                        checkboxWrapper.onmouseout = () => checkboxWrapper.style.background = 'transparent';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.value = folder.id;
+                        checkbox.id = `folder-${folder.id}`;
+                        checkbox.dataset.name = folder.name;
+                        checkbox.style.marginRight = '8px';
+
+                        // Check if this folder was previously selected
+                        if (clickupConfig.folderIds.includes(folder.id)) {
+                            checkbox.checked = true;
+                        }
+
+                        const label = document.createElement('span');
+                        label.textContent = folder.name;
+                        label.style.fontSize = '11px';
+
+                        checkboxWrapper.appendChild(checkbox);
+                        checkboxWrapper.appendChild(label);
+                        foldersContainer.appendChild(checkboxWrapper);
+                    });
+                }
+            } catch (error) {
+                console.error('[ClickUp] Error loading folders:', error);
+                foldersContainer.innerHTML = '<p style="font-size: 11px; color: #dc2626; margin: 0;">Error loading folders</p>';
+            }
+        }
+
+        // Save ClickUp configuration
+        async function saveClickUpConfig() {
+            const workspaceSelect = document.getElementById('clickupWorkspaceSelect');
+            const spaceSelect = document.getElementById('clickupSpaceSelect');
+            const statusEl = document.getElementById('clickupConfigStatus');
+            const summaryEl = document.getElementById('clickupConfigSummary');
+            const summaryTextEl = document.getElementById('configSummaryText');
+
+            const selectedWorkspaceId = workspaceSelect.value;
+            const selectedSpaceId = spaceSelect.value;
+
+            if (!selectedWorkspaceId || !selectedSpaceId) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = '#dc2626';
+                statusEl.textContent = '⚠️ Please select a workspace and space';
+                setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+                return;
+            }
+
+            // Get selected folders
+            const folderCheckboxes = document.querySelectorAll('#clickupFoldersContainer input[type="checkbox"]:checked');
+            const selectedFolderIds = Array.from(folderCheckboxes).map(cb => cb.value);
+            const selectedFolderNames = Array.from(folderCheckboxes).map(cb => cb.dataset.name);
+
+            if (selectedFolderIds.length === 0) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = '#dc2626';
+                statusEl.textContent = '⚠️ Please select at least one folder';
+                setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+                return;
+            }
+
+            // Get workspace and space names
+            const selectedWorkspace = clickupWorkspaces.find(w => w.id === selectedWorkspaceId);
+            const selectedSpace = selectedWorkspace?.spaces.find(s => s.id === selectedSpaceId);
+
+            clickupConfig = {
+                workspaceId: selectedWorkspaceId,
+                workspaceName: selectedWorkspace?.name || '',
+                spaceId: selectedSpaceId,
+                spaceName: selectedSpace?.name || '',
+                folderIds: selectedFolderIds,
+                folderNames: selectedFolderNames
+            };
+
+            // Save to Figma storage
+            parent.postMessage({
+                pluginMessage: {
+                    type: 'save-clickup-config',
+                    data: clickupConfig
+                }
+            }, '*');
+
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#059669';
+            statusEl.textContent = '✓ Configuration saved successfully!';
+            setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+
+            // Show summary
+            summaryEl.style.display = 'block';
+            summaryTextEl.innerHTML = `
+                Workspace: <strong>${clickupConfig.workspaceName}</strong><br>
+                Space: <strong>${clickupConfig.spaceName}</strong><br>
+                Folders: <strong>${clickupConfig.folderNames.join(', ')}</strong>
+            `;
+
+            console.log('[ClickUp] Configuration saved:', clickupConfig);
+        }
+
+        // Populate ClickUp tasks dropdown using user configuration
         async function populateClickUpTasks() {
             try {
-                console.log('[ClickUp] Starting to fetch tasks from folders:', CLICKUP_FOLDER_IDS);
+                // Check if configuration is complete
+                if (!clickupConfig.workspaceId || !clickupConfig.spaceId || !clickupConfig.folderIds || clickupConfig.folderIds.length === 0) {
+                    console.log('[ClickUp] Configuration not complete. Please configure workspace, space, and folders in Settings.');
+                    return;
+                }
 
-                // Collect all lists from the 2 folders
+                console.log('[ClickUp] Starting to fetch tasks from configured folders:', clickupConfig.folderIds);
+                console.log('[ClickUp] Configuration:', clickupConfig);
+
+                // Collect all lists from configured folders
                 const allLists = [];
 
-                for (const folderId of CLICKUP_FOLDER_IDS) {
+                for (const folderId of clickupConfig.folderIds) {
                     const listsResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-folder-lists', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -2978,7 +3290,7 @@
 
                 for (const list of allLists) {
                     console.log(`[ClickUp] Loading tasks from list: ${list.name} (ID: ${list.id})`);
-                    const tasks = await loadClickUpTasks(CLICKUP_WORKSPACE_ID, null, list.id);
+                    const tasks = await loadClickUpTasks(clickupConfig.workspaceId, null, list.id);
 
                     if (tasks && tasks.length > 0) {
                         console.log(`  └─ Found ${tasks.length} tasks`);

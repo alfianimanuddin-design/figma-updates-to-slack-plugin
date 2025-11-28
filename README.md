@@ -1,9 +1,10 @@
-# 🎨 Figma Updates to Slack
+# 🎨 Figma to Slack Notifier
 
-> Share your design updates to Slack with beautiful, Git-style commit messages — right from Figma!
+> Share final design updates to Slack with ClickUp task integration — streamlined, professional, and automated.
 
 [![Made for Figma](https://img.shields.io/badge/Made%20for-Figma-F24E1E?style=flat&logo=figma)](https://www.figma.com)
 [![Powered by Slack](https://img.shields.io/badge/Powered%20by-Slack-4A154B?style=flat&logo=slack)](https://slack.com)
+[![Integrated with ClickUp](https://img.shields.io/badge/Integrated%20with-ClickUp-7B68EE?style=flat&logo=clickup)](https://clickup.com)
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=flat&logo=vercel)](https://vercel.com)
 
 ---
@@ -14,13 +15,12 @@
 <tr>
 <td width="50%">
 
-### 🏷️ **Git-Style Commits**
-Choose from 5 commit types:
-- ✨ **Feature** - New designs & components
-- 🐛 **Fix** - Bug fixes & corrections
-- 🔄 **Update** - Improvements to existing work
-- 🎯 **Final** - Ready for handoff
-- 👀 **Review** - Request feedback
+### 🏷️ **Streamlined Format**
+Professional "Final Design" format:
+- ✅ **Consistent messaging** - Clear, professional updates
+- 📋 **Task-focused** - Links to ClickUp tasks
+- 🎯 **Final design delivery** - Ready for review & handoff
+- 🔗 **Context-rich** - Includes Figma & ClickUp links
 
 </td>
 <td width="50%">
@@ -56,13 +56,13 @@ Choose from 5 commit types:
 <tr>
 <td width="50%">
 
-### 🚀 **Zero Configuration***
-- 💾 Saves settings locally
-- 🔄 One-time Slack setup
-- ⚡ Instant deployment
-- 🌐 Works everywhere
+### 🚀 **Zero Deployment Required**
+- 💾 Uses official shared backend
+- 🔄 One-time Slack & ClickUp setup
+- ⚡ No Vercel account needed
+- 🌐 Works for all users instantly
 
-<sub>*After initial Slack app setup</sub>
+<sub>*All users share the same backend infrastructure</sub>
 
 </td>
 <td width="50%">
@@ -97,29 +97,44 @@ Choose from 5 commit types:
 
 ## 🚀 Quick Start
 
-### For Users
+### For End Users (Recommended)
 
-**📖 New to this?** Follow the complete [Setup Guide](./SETUP_GUIDE.md) for step-by-step instructions.
+**⚡ 3-Minute Setup - No Deployment Required!**
 
-**⚡ Quick Setup (5 minutes):**
+The plugin uses a **shared official backend** - just install and connect your accounts:
 
-1. **Create a Slack App** at [api.slack.com/apps](https://api.slack.com/apps)
-2. **Add these OAuth Scopes:**
-   - `channels:read`, `groups:read`, `users:read`, `users:read.email`, `chat:write`, `incoming-webhook`
-3. **Install the plugin** in Figma (Development → Import plugin from manifest)
-4. **Configure in plugin settings:**
-   - Paste your Slack Bot Token
-   - Fetch your team members
-   - Configure channels
-5. **[Optional] Connect ClickUp:**
-   - Link ClickUp tasks to commits
-   - Auto-update task status and fields
-   - See [ClickUp Setup Guide](./CLICKUP_SETUP.md)
-6. **Start committing!** 🎉
+1. **Install the plugin** in Figma:
+   - Download or clone this repository
+   - In Figma: `Plugins → Development → Import plugin from manifest`
+   - Select `manifest.json`
+
+2. **Configure Slack** (one-time setup):
+   - Create a Slack App at [api.slack.com/apps](https://api.slack.com/apps)
+   - Add OAuth Scopes: `channels:read`, `groups:read`, `users:read`, `users:read.email`, `chat:write`, `incoming-webhook`
+   - Install to your workspace and copy the Bot Token
+   - Paste token in plugin settings → Fetch users & channels
+
+3. **Connect ClickUp** (one-click):
+   - Click "Connect ClickUp" in plugin settings
+   - Authorize access to your workspace
+   - Select folders to pull tasks from
+   - Done! 🎉
+
+4. **Start posting!** All commits now include ClickUp task links and auto-update task status
 
 👉 **Detailed guides:**
-- [Slack Setup Guide](./SETUP_GUIDE.md)
-- [ClickUp Integration Guide](./CLICKUP_SETUP.md) (Optional)
+- [Slack Setup Guide](./SETUP_GUIDE.md) - Complete Slack app creation steps
+- [User Guide](./USER_GUIDE.md) - How to use the plugin
+
+---
+
+### For Developers (Self-Hosting)
+
+Want to run your own backend or contribute? See [CONTRIBUTING.md](./CONTRIBUTING.md) for:
+- Local development setup
+- Deploying your own Vercel instance
+- Architecture overview
+- How to contribute
 
 ---
 
@@ -138,49 +153,40 @@ graph LR
 
 1. **Make design changes** in Figma
 2. **Open the plugin** (Plugins → Figma Updates to Slack)
-3. **[Optional] Link ClickUp task** - Search and select your task
-4. **Write a commit message** and select type
-5. **Add details** (description, @mentions, etc.)
-6. **Select channel** and click **"Commit to Slack"**
-7. **Done!** Your team sees it instantly in Slack, and ClickUp is auto-updated
+3. **Select Slack channel** - Choose where to post
+4. **Link ClickUp task** - Search and select your task (required)
+5. **Add Figma link** - Paste your Figma file URL
+6. **Write description** - Detail what's been completed
+7. **Acknowledge team members** - Tag who needs to see this
+8. **Click "Post to Slack"** - Your team sees it instantly, and ClickUp is auto-updated
 
 ---
 
-## 💬 Example Slack Messages
+## 💬 Example Slack Message
 
-### Feature Commit
 ```
-✨ FEATURE: Redesigned checkout flow
+✅✅✅✅✅
+FINAL DESIGN FOR: [ClickUp Task Name] + Description
 
-File: E-commerce Redesign
-Page: Checkout V2
-By: @jane
+📋 ClickUp Task: [ClickUp Task Name]
+🔗 ClickUp Link: [Link to task]
 
-Description:
-• Simplified to 3 steps instead of 5
-• Added trust badges and security icons
-• Improved mobile responsiveness
+🎨 Figma Link: [Link to Figma file]
 
-[Open in Figma] [View Page]
+📝 Description:
+• Design revisions based on stakeholder feedback
+• Updated color palette to match brand guidelines
+• Improved mobile responsiveness for tablet view
+• Added interactive prototypes for user testing
+
+Acknowledged by: @jane, @john
+CC: @design-team
+
 ━━━━━━━━━━━━━━━━━━━━━
-🕐 Nov 14, 2025 at 3:45 PM
+🕐 Nov 28, 2025 at 3:45 PM
 ```
 
-### Bug Fix Commit
-```
-🐛 FIX: Corrected button alignment on mobile
-
-File: Mobile App V3
-Page: Home Screen
-By: @john • CC: @design-team
-
-Fixed button alignment issues on screens < 375px width.
-Tested on iPhone SE and Galaxy S20.
-
-[Open in Figma] [View Page]
-━━━━━━━━━━━━━━━━━━━━━
-🕐 Nov 14, 2025 at 2:30 PM
-```
+**Note:** The plugin uses a clean "FINAL DESIGN FOR:" format for all design updates, ensuring consistency and professionalism in team communications.
 
 ---
 
@@ -225,53 +231,16 @@ figma-updates-to-slack-plugin/
 
 ---
 
-## 🔧 Development
+## 🔧 Development & Contributing
 
-### Prerequisites
-- Node.js 18+
-- Vercel CLI (for backend development)
-- Figma account
+**👥 Want to contribute or self-host?** Check out [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-### Local Development
+The official backend is hosted at `https://figma-slack-bridge.vercel.app` and serves all users. You only need local development if you're:
+- Contributing new features or fixes
+- Testing backend changes
+- Running a private fork
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/alfianimanuddin-design/figma-updates-to-slack-plugin.git
-   cd figma-updates-to-slack-plugin
-   ```
-
-2. **Install dependencies (for backend development)**
-   ```bash
-   cd figma-slack-bridge
-   npm install
-   ```
-
-3. **Run backend locally**
-   ```bash
-   vercel dev
-   # Server runs at http://localhost:3000
-   ```
-
-4. **Update plugin to use local server**
-   - In `ui.html`, change `SERVER_URL` to `http://localhost:3000`
-
-5. **Import plugin in Figma**
-   - Figma → Plugins → Development → Import plugin from manifest
-   - Select `manifest.json`
-
-6. **Make changes and test!**
-   - Edit `ui.html` or `code.js`
-   - Reload plugin in Figma
-
-### Deployment
-
-Backend auto-deploys to Vercel when you push to GitHub:
-```bash
-git add .
-git commit -m "Your changes"
-git push
-# Vercel automatically deploys! 🚀
-```
+For detailed setup instructions, architecture overview, and contribution guidelines, see the [Contributing Guide](./CONTRIBUTING.md).
 
 ---
 
@@ -338,18 +307,19 @@ Use [Slack Block Kit Builder](https://app.slack.com/block-kit-builder) to design
 **Current Version: 2.0.0**
 
 ### ✅ Completed
-- [x] Core commit functionality
-- [x] Multiple commit types
+- [x] Core posting functionality
+- [x] Streamlined "Final Design" format
 - [x] User autocomplete & @mentions
 - [x] Channel configuration
 - [x] Rich text editor for descriptions
 - [x] Backend API with rate limiting
-- [x] **ClickUp OAuth integration**
+- [x] **ClickUp OAuth integration** (required)
 - [x] **Task linking & auto-update**
 - [x] **Task search & filtering**
 - [x] **Custom field updates**
 - [x] Security improvements
 - [x] Loading states & UI feedback
+- [x] Required field validation
 
 ### 🔄 In Progress
 - [ ] First-time user onboarding
@@ -396,30 +366,31 @@ Feel free to use, modify, and distribute this plugin!
 
 ---
 
-## 🔗 ClickUp Integration
+## 🔗 ClickUp Integration (Built-in)
 
-The plugin now includes powerful ClickUp integration to streamline your design workflow:
+The plugin includes **seamless ClickUp integration** with zero configuration:
 
-### Features
-- **OAuth 2.0 Authentication** - Secure connection to your ClickUp workspace
-- **Task Linking** - Associate Figma commits with ClickUp tasks
-- **Auto-Population** - Task name automatically fills commit message
-- **Smart Filtering** - Shows only tasks with "in progress" status
-- **Search Functionality** - Quickly find tasks by name
-- **Auto-Update** - Updates task status and custom fields when posting to Slack
-- **Custom Fields** - Automatically updates:
-  - Design Link (Figma file URL)
-  - Delivery Date (timestamp of commit)
-  - Other configured custom fields
+### ✨ Features
+- **One-Click OAuth** - Connect your ClickUp account instantly
+- **Task Linking** - Required for every commit (ensures accountability)
+- **Auto-Population** - Task name becomes your commit title
+- **Smart Filtering** - Only shows "in progress" tasks
+- **Search** - Find tasks quickly by name
+- **Auto-Update** - Updates task status & custom fields on post:
+  - ✅ Design Link (Figma file URL)
+  - ✅ Delivery Date (timestamp)
+  - ✅ Custom fields (if configured in your ClickUp)
 
-### How to Enable
-1. Go to plugin settings
-2. Click "Connect ClickUp"
-3. Authorize the app in ClickUp
-4. Select your workspace and folders
-5. Start linking tasks to commits!
+### 🚀 Setup (30 seconds)
+1. Open plugin settings
+2. Click **"Connect ClickUp"**
+3. Authorize in ClickUp (one-time)
+4. Select workspace & folders
+5. Done! Tasks appear in dropdown
 
-See the complete [ClickUp Setup Guide](./CLICKUP_SETUP.md) for detailed instructions.
+**No backend setup needed** - the plugin uses the official shared OAuth app.
+
+See [How to Use ClickUp Integration](./CLICKUP_SETUP.md) for detailed features.
 
 ---
 
@@ -437,6 +408,6 @@ See the complete [ClickUp Setup Guide](./CLICKUP_SETUP.md) for detailed instruct
 
 **Made with ❤️ for designers who love staying in sync**
 
-[⬆ Back to Top](#-figma-updates-to-slack)
+[⬆ Back to Top](#-figma-to-slack-notifier)
 
 </div>

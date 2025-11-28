@@ -118,31 +118,30 @@ This enables autocomplete when you want to acknowledge team members.
 
 ---
 
-## Part 4: [Optional] Connect ClickUp Integration
+## Part 4: Connect ClickUp Integration (Required)
 
-Want to link your Figma commits to ClickUp tasks? Follow the [ClickUp Setup Guide](./CLICKUP_SETUP.md) to:
-- Connect your ClickUp workspace
-- Link commits to specific tasks
-- Auto-update task status and custom fields
+ClickUp integration is now required for the plugin to work. Follow the [ClickUp Setup Guide](./CLICKUP_SETUP.md) to:
+- Connect your ClickUp workspace via OAuth
+- Select your folders and lists
+- Enable task search and auto-update features
 
-**This is completely optional** - you can skip this and use the plugin without ClickUp.
+**This is required** - the plugin needs a ClickUp task to post design updates.
 
 ---
 
 ## Part 5: Send Your First Update! (1 minute)
 
 1. Close settings (click **"✖"** or **"← Back"**)
-2. Fill out the commit form:
-   - **[Optional] ClickUp Task**: Search and select a task (if connected)
-   - **Task Name**: e.g., "Updated homepage hero section" (auto-filled if ClickUp task selected)
-   - **Commit Type**: Click ✨ Feature, 🐛 Fix, 🔄 Update, 🎯 Final, or 👀 Review
-   - **Description**: Add more details (optional)
-   - **Acknowledged by**: Start typing a teammate's name (optional)
+2. Fill out the form:
+   - **Slack Channel**: Select where to post (required)
+   - **ClickUp Task**: Search and select your task (required)
+   - **Figma Project Link**: Paste your Figma file URL (required)
+   - **Description**: Add details about what's been completed (required)
+   - **Acknowledged by**: Tag teammates who need to see this (required)
    - **CC**: Add more people to notify (optional)
-   - **Channel**: Select where to post
-3. Click **"📤 Commit to Slack"**
+3. Click **"📤 Post to Slack"**
 4. Check your Slack channel! 🎉
-5. If you linked a ClickUp task, check ClickUp - it's been updated automatically!
+5. Check ClickUp - it's been updated automatically with the Design Link and Delivery Date!
 
 ---
 
@@ -152,22 +151,19 @@ Want to link your Figma commits to ClickUp tasks? Follow the [ClickUp Setup Guid
 
 1. Make design changes in Figma
 2. Open the plugin
-3. Write a quick commit message
-4. Select commit type
-5. Choose channel and click commit
-6. Your team sees the update in Slack instantly!
+3. Select your ClickUp task
+4. Add Figma link and description
+5. Tag teammates and post
+6. Your team sees the update in Slack instantly, and ClickUp is updated!
 
 ### Best Practices
 
-- **Be descriptive**: "Added new checkout flow" is better than "Updates"
-- **Use commit types**:
-  - ✨ **Feature**: New designs, new components
-  - 🐛 **Fix**: Fixed issues, corrected mistakes
-  - 🔄 **Update**: Improved existing designs
-  - 🎯 **Final**: Final version ready for handoff
-  - 👀 **Review**: Ready for feedback
-- **Acknowledge teammates**: Use @mentions to notify specific people
-- **Rich descriptions**: Use the editor for formatting
+- **Be descriptive**: Write detailed descriptions of what's been completed
+- **Link properly**: Always include both ClickUp task and Figma file links
+- **Acknowledge teammates**: Tag everyone who needs to review the work
+- **Rich descriptions**: Use the editor for bullet points and formatting
+- **Keep it current**: Update as you complete design milestones
+- **Use CC wisely**: Add stakeholders who should be informed but don't need to act
 
 ### Keyboard Shortcuts in Description Editor
 

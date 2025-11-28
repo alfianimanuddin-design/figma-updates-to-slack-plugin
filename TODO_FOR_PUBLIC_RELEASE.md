@@ -4,7 +4,10 @@
 
 ### Documentation
 - [x] Create comprehensive setup guide (SETUP_GUIDE.md)
-- [ ] Update README.md with current features
+- [x] Create ClickUp integration guide (CLICKUP_SETUP.md)
+- [x] Update README.md with current features
+- [x] Update README.md with ClickUp integration
+- [x] Update roadmap to reflect version 2.0.0
 - [ ] Add screenshots/GIFs showing the plugin in action
 - [ ] Create video tutorial (optional but helpful)
 - [ ] Add FAQ section
@@ -16,14 +19,20 @@
   - [ ] Link to setup guide
 - [ ] Add "Test Connection" button to verify Slack setup
 - [ ] Add "Copy Example" buttons for webhook URLs
-- [ ] Improve error messages with actionable solutions
-- [ ] Add loading states for all async operations
-- [ ] Add success animations/feedback
+- [x] Improve error messages with actionable solutions
+- [x] Add loading states for all async operations
+- [x] Add success animations/feedback
+- [x] Add ClickUp task search functionality
+- [x] Add auto-populate task name from ClickUp
+- [x] Add loading spinner for ClickUp task fetching
 
 ### Plugin Settings
 - [x] Save Slack bot token securely
 - [x] Fetch and save users for autocomplete
 - [x] Fetch and configure channels
+- [x] Save ClickUp access token securely
+- [x] ClickUp OAuth connection flow
+- [x] Fetch and display ClickUp tasks
 - [ ] Add "Clear All Data" button for troubleshooting
 - [ ] Add "Export Configuration" to backup settings
 - [ ] Add "Import Configuration" to restore settings
@@ -40,15 +49,21 @@
 - [x] Deploy to production (figma-slack-bridge.vercel.app)
 - [x] Add rate limiting prevention
 - [x] Add error logging
+- [x] Implement ClickUp OAuth flow
+- [x] Add ClickUp API endpoints
+- [x] Add CORS headers for security
+- [x] Environment variables for secrets
 - [ ] Set up monitoring/alerting (optional)
 - [ ] Add usage analytics (optional)
-- [ ] Document API endpoints
+- [x] Document API endpoints (in README)
 
 ### Security & Privacy
-- [ ] Review data handling (what gets stored where)
+- [x] Review data handling (what gets stored where)
+- [x] Ensure tokens are stored securely in Figma client storage
+- [x] OAuth 2.0 for ClickUp authentication
+- [x] Remove unused/insecure commit types
 - [ ] Add privacy policy
-- [ ] Document what data is sent to Slack
-- [ ] Ensure tokens are stored securely in Figma client storage
+- [ ] Document what data is sent to Slack and ClickUp
 - [ ] Add note about not exposing tokens in screenshots
 
 ---
@@ -56,14 +71,14 @@
 ## 🎨 Nice to Have (Optional)
 
 ### Features
-- [ ] Add custom commit types
-- [ ] Add emoji picker for commit messages
 - [ ] Add file/component preview images in Slack
 - [ ] Add threading support (replies to previous commits)
 - [ ] Add @mentions support in descriptions
 - [ ] Add slash commands in Slack to trigger plugin
-- [ ] Add daily/weekly digest of commits
+- [ ] Add daily/weekly digest of updates
 - [ ] Add analytics dashboard
+- [ ] Optional manual ClickUp task entry (for flexibility)
+- [ ] Attachment uploads (design files, PDFs, etc.)
 
 ### UI/UX Enhancements
 - [ ] Dark mode support
@@ -75,10 +90,12 @@
 - [ ] Keyboard shortcuts for everything
 
 ### Integration
+- [x] **ClickUp integration** (link to tasks, auto-update)
 - [ ] GitHub integration (link commits to PRs)
 - [ ] Jira integration (link to tickets)
 - [ ] Linear integration
 - [ ] Notion integration
+- [ ] Asana integration
 
 ---
 
@@ -124,28 +141,41 @@
 - Channel fetching (bot member channels only)
 - Webhook configuration
 - Rich text editor for descriptions
-- Multiple commit types
+- **Streamlined to single "Final Design" format** (removed multiple commit types)
 - Acknowledgments and CC functionality
 - Backend API with rate limiting
 - Error handling and logging
+- **ClickUp OAuth integration (now required)**
+- **ClickUp task fetching and filtering**
+- **Task search functionality**
+- **Auto-update ClickUp status and custom fields**
+- **Loading states and UI feedback**
+- **Security improvements (OAuth 2.0, token encryption)**
+- **Required field validation**
+- Enhanced documentation (README, SETUP_GUIDE, CLICKUP_SETUP)
 
 ### 🔄 In Progress
-- Documentation
 - User testing
+- Platform compatibility testing
+- Adding screenshots and demos
 
 ### ⏳ Pending
-- First-time user experience
-- Plugin publishing
+- First-time user experience/onboarding
+- Plugin publishing to Figma Community
 - Marketing materials
+- Privacy policy
 
 ---
 
 ## 📝 Notes
 
 ### Known Issues
-- [ ] Rate limiting with 700+ channels (FIXED: Now only fetches bot member channels)
+- [x] Rate limiting with 700+ channels (FIXED: Now only fetches bot member channels)
+- [x] Timezone issues with dates (FIXED: Now uses local time)
+- [x] Form validation with hidden task name field (FIXED)
 - [ ] Large workspaces may take time to fetch users (acceptable)
 - [ ] No offline support (requires internet connection)
+- [ ] ClickUp requires specific folder/list structure
 
 ### Future Considerations
 - Consider adding a premium tier with advanced features
@@ -177,4 +207,4 @@
 
 ---
 
-**Last Updated**: 2025-11-14
+**Last Updated**: 2025-11-28 (Version 2.0.0 - ClickUp Integration Release)
