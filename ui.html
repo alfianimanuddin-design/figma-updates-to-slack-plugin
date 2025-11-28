@@ -2974,8 +2974,9 @@
                 throw new Error('No ClickUp access token available');
             }
 
-            // Get current date in YYYY-MM-DD format
-            const currentDate = new Date().toISOString().split('T')[0];
+            // Get current date in YYYY-MM-DD format (using local timezone, not UTC)
+            const now = new Date();
+            const currentDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
             const customFields = [
                 {
