@@ -3237,8 +3237,6 @@
 
             statusEl.style.display = 'block';
             statusEl.style.color = '#059669';
-            statusEl.textContent = '✓ Configuration saved successfully!';
-            setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
 
             // Show summary
             summaryEl.style.display = 'block';
@@ -3249,6 +3247,12 @@
             `;
 
             console.log('[ClickUp] Configuration saved:', clickupConfig);
+
+            // Fetch tasks with the new configuration
+            statusEl.textContent = '✓ Configuration saved! Fetching tasks...';
+            await populateClickUpTasks();
+            statusEl.textContent = '✓ Configuration saved and tasks loaded!';
+            setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
         }
 
         // Populate ClickUp tasks dropdown using user configuration
@@ -3267,6 +3271,7 @@
                 const allLists = [];
 
                 for (const folderId of clickupConfig.folderIds) {
+                    console.log(`[ClickUp] Fetching lists for folder ${folderId}...`);
                     const listsResponse = await fetch('https://figma-slack-bridge.vercel.app/api/clickup-folder-lists', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -3277,9 +3282,13 @@
                     });
                     const listsData = await listsResponse.json();
 
+                    console.log(`[ClickUp] Folder ${folderId} response:`, listsData);
+
                     if (listsData.success && listsData.lists) {
                         console.log(`[ClickUp] Folder ${folderId}: Found ${listsData.lists.length} lists`);
                         allLists.push(...listsData.lists);
+                    } else {
+                        console.warn(`[ClickUp] Folder ${folderId}: Failed to get lists - ${listsData.error || 'Unknown error'}`);
                     }
                 }
 
@@ -3311,10 +3320,20 @@
 
                 console.log(`[ClickUp] Unique tasks: ${uniqueTasks.length} (removed ${clickupTasks.length - uniqueTasks.length} duplicates)`);
 
-                // Filter tasks with "in progress" status
+                // Log all task statuses for debugging
+                if (uniqueTasks.length > 0) {
+                    const statusCounts = {};
+                    uniqueTasks.forEach(task => {
+                        const status = task.status?.status || task.status || 'unknown';
+                        statusCounts[status] = (statusCounts[status] || 0) + 1;
+                    });
+                    console.log('[ClickUp] Task statuses breakdown:', statusCounts);
+                }
+
+                // Filter tasks with "in progress" status (check both status object and string)
                 const inProgressTasks = uniqueTasks.filter(task => {
-                    const status = task.status?.toLowerCase() || '';
-                    return status.includes('in progress') || status.includes('in-progress') || status === 'in progress';
+                    const statusStr = task.status?.status?.toLowerCase() || task.status?.toLowerCase() || '';
+                    return statusStr.includes('in progress') || statusStr.includes('in-progress') || statusStr === 'in progress' || statusStr === 'in-progress';
                 });
 
                 console.log(`[ClickUp] Tasks with "in progress" status: ${inProgressTasks.length}`);
