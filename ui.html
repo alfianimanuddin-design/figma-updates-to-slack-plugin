@@ -501,7 +501,7 @@
         }
 
         .status {
-            margin-top: 16px;
+            margin-bottom: 16px;
             padding: 16px 20px;
             border-radius: 10px;
             font-size: 13px;
@@ -1793,9 +1793,7 @@
             </div>
 
         <!-- Spacing for fixed CTA -->
-        <div style="height: 80px;"></div>
-
-        <div id="status" class="status"></div>
+        <div style="height: 120px;"></div>
 
         <!-- Hidden preview content for confirmation modal -->
         <div id="previewContent" style="display: none;"></div>
@@ -1804,6 +1802,7 @@
         <!-- Fixed CTA at bottom -->
         <div class="fixed-cta">
             <div class="cta-container">
+                <div id="status" class="status"></div>
                 <button type="button" class="submit-btn" id="submitBtn" onclick="commitToSlack()" disabled title="Keyboard shortcut: Cmd/Ctrl + Enter">
                     Share Final Design to Slack
                 </button>
@@ -4346,23 +4345,29 @@
 
         function showStatus(message, type) {
             const statusDiv = document.getElementById('status');
+
+            // Clear previous content
+            statusDiv.innerHTML = '';
             statusDiv.className = `status ${type}`;
 
             if (type === 'loading') {
-                // Create spinner and text for loading state
-                statusDiv.innerHTML = `
-                    <div class="status-spinner"></div>
-                    <div class="status-text">${message}</div>
-                `;
+                // Create spinner and text for loading state (secure DOM manipulation)
+                const spinner = document.createElement('div');
+                spinner.className = 'status-spinner';
+
+                const text = document.createElement('div');
+                text.className = 'status-text';
+                text.textContent = message;
+
+                statusDiv.appendChild(spinner);
+                statusDiv.appendChild(text);
+                statusDiv.style.display = 'flex';
             } else {
                 // For success and error, just show text
                 statusDiv.textContent = message;
-            }
+                statusDiv.style.display = 'block';
 
-            statusDiv.style.display = type === 'loading' ? 'flex' : 'block';
-
-            // Auto-hide success and error messages after 5 seconds
-            if (type === 'success' || type === 'error') {
+                // Auto-hide success and error messages after 5 seconds
                 setTimeout(() => {
                     statusDiv.style.display = 'none';
                 }, 5000);
